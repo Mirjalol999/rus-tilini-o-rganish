@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Русский Язык: Битва Умов (4–6 классы)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Nunito', sans-serif;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #1e3a8a 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #1e293b;
+        }
+
+        /* Анимации для игровых элементов */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 15px rgba(250, 204, 21, 0.4); }
+            50% { box-shadow: 0 0 28px rgba(250, 204, 21, 0.85); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-8px); }
+            40% { transform: translateX(8px); }
+            60% { transform: translateX(-6px); }
+            80% { transform: translateX(6px); }
+        }
+
+        @keyframes flameFlicker {
+            0%, 100% { transform: scaleY(1) scaleX(1); opacity: 0.95; }
+            50% { transform: scaleY(1.35) scaleX(0.85); opacity: 1; }
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .animate-shake {
+            animation: shake 0.4s ease-in-out;
+        }
+
+        .animate-pop {
+            animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .rocket-flame {
+            animation: flameFlicker 0.18s infinite alternate;
+            transform-origin: left center;
+        }
+
+        /* Игровые 3D кнопки */
+        .btn-3d {
+            transition: all 0.1s ease;
+            border-bottom-width: 5px;
+        }
+        .btn-3d:active:not(:disabled) {
+            transform: translateY(3px);
+            border-bottom-width: 2px;
+        }
+        .btn-3d:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+
+        /* Фон звезд для гонок на ракетах */
+        .space-bg {
+            background-color: #090d16;
+            background-image: 
+                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px),
+                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 2px),
+                radial-gradient(rgba(255,255,255,.4), rgba(255,255,255,.1) 2px, transparent 3px);
+            background-size: 250px 250px, 150px 150px, 350px 350px;
+            background-position: 0 0, 40px 60px, 130px 270px;
+        }
+
+        /* Трава и небо для перетягивания каната */
+        .tug-sky {
+            background: linear-gradient(180deg, #38bdf8 0%, #bae6fd 72%, #22c55e 72%, #16a34a 100%);
+        }
+
+        /* Конфетти */
+        .confetti-piece {
+            position: fixed;
+            width: 10px;
+            height: 14px;
+            top: -20px;
+            z-index: 100;
+            pointer-events: none;
+            animation: confettiFall linear forwards;
+        }
+
+        @keyframes confettiFall {
+            to {
+                transform: translateY(105vh) rotate(720deg);
+            }
+        }
+    </style>
+</head>
+<body class="flex flex-col justify-between">
+
+    <!-- ВЕРХНЯЯ ПАНЕЛЬ НАВИГАЦИИ -->
+    <header class="w-full bg-slate-900/80 backdrop-blur-md border-b border-white/10 px-4 py-2.5 flex items-center justify-between text-white z-30">
+        <div class="flex items-center gap-2.5">
+            <button id="btn-home" onclick="returnToMenu()" class="hidden bg-white/15 hover:bg-white/25 active:scale-95 px-3 py-1.5 rounded-xl font-bold text-sm flex items-center gap-1.5 transition">
+                <span>🏠</span> <span class="hidden sm:inline">В меню</span>
+            </button>
+            <div class="flex items-center gap-2">
+                <span class="text-2xl">📚</span>
+                <div>
+                    <h1 class="font-black text-base sm:text-lg leading-tight tracking-wide text-amber-300">РУССКИЙ ЯЗЫК: БИТВА УМОВ</h1>
+                    <p class="text-[11px] text-slate-300 hidden sm:block">Обучающие игры для 2 игроков (4–6 классы)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Общий счет побед -->
+        <div class="flex items-center gap-2 sm:gap-4 bg-slate-800/90 px-3 py-1.5 rounded-2xl border border-white/10">
+            <div class="flex items-center gap-1.5">
+                <span class="w-3 h-3 rounded-full bg-blue-500 inline-block"></span>
+                <span id="header-p1-name" class="font-bold text-xs sm:text-sm text-blue-300 max-w-[75px] truncate">Игрок 1</span>
+                <span id="header-p1-wins" class="bg-blue-600 text-white font-black text-xs sm:text-sm px-2 py-0.5 rounded-lg">0</span>
+            </div>
+            <span class="text-slate-400 font-black text-xs">VS</span>
+            <div class="flex items-center gap-1.5">
+                <span id="header-p2-wins" class="bg-rose-600 text-white font-black text-xs sm:text-sm px-2 py-0.5 rounded-lg">0</span>
+                <span id="header-p2-name" class="font-bold text-xs sm:text-sm text-rose-300 max-w-[75px] truncate">Игрок 2</span>
+                <span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span>
+            </div>
+        </div>
+
+        <!-- Кнопка звука и справка -->
+        <div class="flex items-center gap-2">
+            <button onclick="toggleHelpModal()" class="bg-white/10 hover:bg-white/20 w-9 h-9 rounded-xl flex items-center justify-center font-black text-amber-300 transition" title="Правила и управление">
+                ?
+            </button>
+            <button id="btn-sound" onclick="toggleSound()" class="bg-white/10 hover:bg-white/20 w-9 h-9 rounded-xl flex items-center justify-center text-lg transition" title="Звук">
+                🔊
+            </button>
+        </div>
+    </header>
+
+    <!-- ОСНОВНОЙ КОНТЕЙНЕР -->
+    <main class="flex-1 w-full max-w-6xl mx-auto p-3 sm:p-5 flex flex-col justify-center">
+
+        <!-- ==================== ЭКРАН 1: ГЛАВНОЕ МЕНЮ ==================== -->
+        <section id="screen-menu" class="animate-pop space-y-5">
+            
+            <!-- Настройка игроков и класса -->
+            <div class="bg-white/95 backdrop-blur rounded-3xl p-4 sm:p-6 shadow-2xl border-4 border-indigo-300/40">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+                    
+                    <!-- Игрок 1 (Синий) -->
+                    <div class="bg-blue-50 border-2 border-blue-200 rounded-2xl p-3 flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-2xl shadow-md shrink-0">
+                            🦸‍♂️
+                        </div>
+                        <div class="w-full">
+                            <label class="block text-xs font-extrabold text-blue-700 uppercase">Игрок 1 (Слева)</label>
+                            <input id="input-p1-name" type="text" value="Игрок 1" maxlength="14" oninput="updateNames()"
+                                class="w-full mt-0.5 bg-white border-2 border-blue-300 focus:border-blue-600 rounded-xl px-3 py-1.5 font-extrabold text-slate-800 outline-none text-sm sm:text-base">
+                            <span class="text-[11px] text-blue-500 font-semibold">Клавиши: Q, W, E, R или 1–4</span>
+                        </div>
+                    </div>
+
+                    <!-- Выбор класса -->
+                    <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-3 text-center">
+                        <label class="block text-xs font-extrabold text-amber-800 uppercase mb-2">🎓 Выберите класс (лёгкие вопросы)</label>
+                        <div class="grid grid-cols-4 gap-1.5" id="grade-selector">
+                            <button onclick="selectGrade(4)" data-grade="4" class="grade-btn py-2 rounded-xl font-black text-sm bg-white border-2 border-amber-300 text-slate-700 hover:bg-amber-100 transition">4 кл</button>
+                            <button onclick="selectGrade(5)" data-grade="5" class="grade-btn py-2 rounded-xl font-black text-sm bg-amber-500 border-2 border-amber-600 text-white shadow-md transition">5 кл</button>
+                            <button onclick="selectGrade(6)" data-grade="6" class="grade-btn py-2 rounded-xl font-black text-sm bg-white border-2 border-amber-300 text-slate-700 hover:bg-amber-100 transition">6 кл</button>
+                            <button onclick="selectGrade(0)" data-grade="0" class="grade-btn py-2 rounded-xl font-black text-xs sm:text-sm bg-white border-2 border-amber-300 text-slate-700 hover:bg-amber-100 transition">Все</button>
+                        </div>
+                        <p id="grade-desc" class="text-[11px] text-amber-700 font-bold mt-1.5">5 класс: Простые части речи, синонимы, мягкий знак</p>
+                    </div>
+
+                    <!-- Игрок 2 (Красный) -->
+                    <div class="bg-rose-50 border-2 border-rose-200 rounded-2xl p-3 flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-2xl bg-rose-600 text-white flex items-center justify-center text-2xl shadow-md shrink-0">
+                            🦸‍♀️
+                        </div>
+                        <div class="w-full">
+                            <label class="block text-xs font-extrabold text-rose-700 uppercase">Игрок 2 (Справа)</label>
+                            <input id="input-p2-name" type="text" value="Игрок 2" maxlength="14" oninput="updateNames()"
+                                class="w-full mt-0.5 bg-white border-2 border-rose-300 focus:border-rose-600 rounded-xl px-3 py-1.5 font-extrabold text-slate-800 outline-none text-sm sm:text-base">
+                            <span class="text-[11px] text-rose-500 font-semibold">Клавиши: U, I, O, P или 7–0</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Выбор режима игры (3 карточки) -->
+            <div class="text-center">
+                <h2 class="text-white font-black text-xl sm:text-2xl tracking-wide drop-shadow">ВЫБЕРИТЕ ИГРУ ДЛЯ ДВОИХ</h2>
+                <p class="text-indigo-200 text-xs sm:text-sm font-semibold">Нажимайте на экран (сенсор) или используйте клавиатуру!</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
+                
+                <!-- ИГРА 1: ПЕРЕТЯГИВАНИЕ КАНАТА -->
+                <div class="bg-white rounded-3xl p-5 shadow-xl border-b-8 border-emerald-500 flex flex-col justify-between hover:-translate-y-1 transition duration-200">
+                    <div>
+                        <div class="w-full h-32 rounded-2xl tug-sky mb-4 flex items-center justify-center relative overflow-hidden border-2 border-emerald-200">
+                            <div class="text-4xl animate-float">🤼‍♂️🪢🤼‍♀️</div>
+                            <span class="absolute top-2 right-2 bg-emerald-600 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase">Сила знаний</span>
+                        </div>
+                        <h3 class="text-xl font-black text-slate-800 mb-1">1. Перетягивание каната</h3>
+                        <p class="text-sm text-slate-600 font-semibold leading-relaxed mb-4">
+                            Отвечайте быстрее соперника на вопросы по орфографии, роду имён существительных и словарным словам, чтобы перетянуть канат на свою сторону!
+                        </p>
+                    </div>
+                    <button onclick="startGame('tug')" class="btn-3d w-full py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 border-emerald-700 text-white font-black text-lg shadow-lg">
+                        ИГРАТЬ ▶
+                    </button>
+                </div>
+
+                <!-- ИГРА 2: КОСМИЧЕСКИЕ ГОНКИ -->
+                <div class="bg-white rounded-3xl p-5 shadow-xl border-b-8 border-indigo-500 flex flex-col justify-between hover:-translate-y-1 transition duration-200">
+                    <div>
+                        <div class="w-full h-32 rounded-2xl space-bg mb-4 flex items-center justify-center relative overflow-hidden border-2 border-indigo-300">
+                            <div class="flex flex-col gap-2 text-3xl">
+                                <span class="animate-pulse">🚀💨</span>
+                                <span class="ml-8">🛸✨</span>
+                            </div>
+                            <span class="absolute top-2 right-2 bg-indigo-600 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase">На скорость</span>
+                        </div>
+                        <h3 class="text-xl font-black text-slate-800 mb-1">2. Гонки на ракетах</h3>
+                        <p class="text-sm text-slate-600 font-semibold leading-relaxed mb-4">
+                            Каждый правильный ответ даёт мощное ускорение вашей ракете! Ошибка ненадолго замораживает двигатель. Долетите до финиша первым!
+                        </p>
+                    </div>
+                    <button onclick="startGame('race')" class="btn-3d w-full py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 border-indigo-800 text-white font-black text-lg shadow-lg">
+                        ПОЛЕТЕЛИ ▶
+                    </button>
+                </div>
+
+                <!-- ИГРА 3: БИТВА ЗА ЗАМОК (ВИКТОРИНА) -->
+                <div class="bg-white rounded-3xl p-5 shadow-xl border-b-8 border-amber-500 flex flex-col justify-between hover:-translate-y-1 transition duration-200">
+                    <div>
+                        <div class="w-full h-32 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 mb-4 flex items-center justify-center relative overflow-hidden border-2 border-amber-200">
+                            <div class="text-5xl animate-float">🏰⚡👑</div>
+                            <span class="absolute top-2 right-2 bg-amber-800 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase">10 раундов</span>
+                        </div>
+                        <h3 class="text-xl font-black text-slate-800 mb-1">3. Битва за Замок</h3>
+                        <p class="text-sm text-slate-600 font-semibold leading-relaxed mb-4">
+                            Классическая дуэль эрудитов: падежи, части речи, ударения и фразеологизмы. Кто первым наберёт 100 очков за 10 раундов?
+                        </p>
+                    </div>
+                    <button onclick="startGame('quiz')" class="btn-3d w-full py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-400 border-amber-700 text-white font-black text-lg shadow-lg">
+                        В БОЙ ▶
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ==================== ЭКРАН 2: ИГРОВАЯ АРЕНА ==================== -->
+        <section id="screen-game" class="hidden space-y-3 sm:space-y-4">
+            
+            <!-- ВИЗУАЛЬНАЯ АРЕНА (меняется в зависимости от выбранной игры) -->
+            <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border-4 border-white/80">
+                
+                <!-- 1. АРЕНА: ПЕРЕТЯГИВАНИЕ КАНАТА -->
+                <div id="arena-tug" class="hidden relative h-44 sm:h-52 tug-sky overflow-hidden">
+                    <!-- Облака -->
+                    <div class="absolute top-3 left-8 text-3xl opacity-80">☁️</div>
+                    <div class="absolute top-6 right-14 text-4xl opacity-80">☁️</div>
+                    <div class="absolute top-2 left-1/2 -translate-x-1/2 bg-white/90 px-3 py-1 rounded-full text-xs font-black text-slate-700 shadow">
+                        ПЕРЕТЯНИ КРАСНЫЙ ФЛАЖОК НА СВОЮ СТОРОНУ!
+                    </div>
+
+                    <!-- Зоны победы слева и справа -->
+                    <div class="absolute inset-y-0 left-0 w-12 sm:w-16 bg-blue-600/35 border-r-4 border-dashed border-blue-700 flex items-center justify-center">
+                        <span class="text-white font-black text-xs -rotate-90 tracking-widest">ПОБЕДА 1</span>
+                    </div>
+                    <div class="absolute inset-y-0 right-0 w-12 sm:w-16 bg-rose-600/35 border-l-4 border-dashed border-rose-700 flex items-center justify-center">
+                        <span class="text-white font-black text-xs rotate-90 tracking-widest">ПОБЕДА 2</span>
+                    </div>
+
+                    <!-- Центральная линия -->
+                    <div class="absolute inset-y-0 left-1/2 w-1 bg-white/70 -translate-x-1/2"></div>
+
+                    <!-- Движущаяся группа с канатом -->
+                    <div id="tug-rope-group" class="absolute bottom-5 left-1/2 -translate-x-1/2 transition-all duration-300 ease-out flex items-center" style="left: 50%;">
+                        <!-- Команда 1 -->
+                        <div class="flex items-end -mr-2">
+                            <span class="text-4xl sm:text-5xl transform -scale-x-100">🏃‍♂️</span>
+                            <span class="text-3xl sm:text-4xl transform -scale-x-100 -ml-2">🦸‍♂️</span>
+                        </div>
+                        <!-- Канат и центральный флажок -->
+                        <div class="w-44 sm:w-64 h-3 bg-amber-700 border-y-2 border-amber-900 rounded-full relative flex items-center justify-center shadow-md">
+                            <div class="w-4 h-7 bg-red-600 border-2 border-white rounded-sm shadow-md -mt-3"></div>
+                        </div>
+                        <!-- Команда 2 -->
+                        <div class="flex items-end -ml-2">
+                            <span class="text-3xl sm:text-4xl -mr-2">🦸‍♀️</span>
+                            <span class="text-4xl sm:text-5xl">🏃‍♀️</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. АРЕНА: ГОНКИ НА РАКЕТАХ -->
+                <div id="arena-race" class="hidden relative h-48 sm:h-56 space-bg p-4 flex flex-col justify-between overflow-hidden">
+                    <div class="flex justify-between items-center text-white/80 text-xs font-black z-10">
+                        <span>СТАРТ 🛸</span>
+                        <span class="bg-indigo-600/80 px-3 py-0.5 rounded-full text-amber-300">КОСМИЧЕСКИЙ СПРИНТ</span>
+                        <span>ФИНИШ 🪐</span>
+                    </div>
+
+                    <!-- Финишная черта -->
+                    <div class="absolute top-0 bottom-0 right-10 sm:right-14 w-3 bg-gradient-to-b from-amber-400 via-white to-amber-400 opacity-80 border-x-2 border-dashed border-slate-900"></div>
+
+                    <!-- Дорожка Игрока 1 (Синяя ракета) -->
+                    <div class="relative w-full h-16 bg-blue-950/60 rounded-2xl border border-blue-500/40 flex items-center px-3">
+                        <div id="race-p1-rocket" class="absolute left-3 transition-all duration-500 ease-out flex items-center" style="left: 2%;">
+                            <div id="race-p1-freeze" class="hidden absolute -top-6 left-1 bg-cyan-400 text-slate-900 text-[10px] font-black px-2 py-0.5 rounded-full">❄️ СБОЙ!</div>
+                            <span class="rocket-flame text-xl sm:text-2xl -mr-2">🔥</span>
+                            <div class="bg-blue-600 text-white px-2.5 py-1 rounded-xl border-2 border-blue-300 shadow-lg flex items-center gap-1">
+                                <span class="text-2xl sm:text-3xl transform rotate-45 inline-block">🚀</span>
+                                <span id="race-p1-label" class="text-[11px] font-black hidden sm:inline">Игрок 1</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Дорожка Игрока 2 (Красная ракета) -->
+                    <div class="relative w-full h-16 bg-rose-950/60 rounded-2xl border border-rose-500/40 flex items-center px-3">
+                        <div id="race-p2-rocket" class="absolute left-3 transition-all duration-500 ease-out flex items-center" style="left: 2%;">
+                            <div id="race-p2-freeze" class="hidden absolute -top-6 left-1 bg-cyan-400 text-slate-900 text-[10px] font-black px-2 py-0.5 rounded-full">❄️ СБОЙ!</div>
+                            <span class="rocket-flame text-xl sm:text-2xl -mr-2">🔥</span>
+                            <div class="bg-rose-600 text-white px-2.5 py-1 rounded-xl border-2 border-rose-300 shadow-lg flex items-center gap-1">
+                                <span class="text-2xl sm:text-3xl transform rotate-45 inline-block">🚀</span>
+                                <span id="race-p2-label" class="text-[11px] font-black hidden sm:inline">Игрок 2</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. АРЕНА: БИТВА ЗА ЗАМОК (ВИКТОРИНА) -->
+                <div id="arena-quiz" class="hidden relative bg-gradient-to-r from-blue-600 via-indigo-700 to-rose-600 p-4 sm:p-5 text-white">
+                    <div class="flex items-center justify-between max-w-3xl mx-auto">
+                        <!-- Счет Игрока 1 -->
+                        <div class="text-center bg-blue-900/60 backdrop-blur px-4 sm:px-6 py-2.5 rounded-2xl border-2 border-blue-300/50 min-w-[110px]">
+                            <div class="text-xs font-bold text-blue-200 truncate" id="quiz-p1-name">Игрок 1</div>
+                            <div class="text-3xl sm:text-4xl font-black text-white" id="quiz-p1-score">0</div>
+                            <div class="text-[10px] text-blue-300 font-bold">очков</div>
+                        </div>
+
+                        <!-- Центр: Раунд и Замок -->
+                        <div class="text-center px-2">
+                            <div class="text-3xl sm:text-4xl mb-1">🏰</div>
+                            <div class="bg-amber-400 text-slate-900 font-black text-xs sm:text-sm px-3 py-1 rounded-full shadow">
+                                Раунд <span id="quiz-round-num">1</span> / 10
+                            </div>
+                        </div>
+
+                        <!-- Счет Игрока 2 -->
+                        <div class="text-center bg-rose-900/60 backdrop-blur px-4 sm:px-6 py-2.5 rounded-2xl border-2 border-rose-300/50 min-w-[110px]">
+                            <div class="text-xs font-bold text-rose-200 truncate" id="quiz-p2-name">Игрок 2</div>
+                            <div class="text-3xl sm:text-4xl font-black text-white" id="quiz-p2-score">0</div>
+                            <div class="text-[10px] text-rose-300 font-bold">очков</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- КАРТОЧКА ТЕКУЩЕГО ВОПРОСА -->
+            <div id="question-box" class="bg-white rounded-3xl p-4 sm:p-6 shadow-xl border-4 border-amber-300 text-center relative">
+                <div class="flex items-center justify-between mb-2">
+                    <span id="q-category" class="bg-indigo-100 text-indigo-800 text-xs font-black px-3 py-1 rounded-full uppercase">Орфография</span>
+                    <span id="q-grade-badge" class="bg-amber-100 text-amber-800 text-xs font-black px-3 py-1 rounded-full">5 класс</span>
+                </div>
+                <h2 id="q-text" class="text-lg sm:text-2xl md:text-3xl font-black text-slate-800 leading-snug my-1">
+                    Загрузка вопроса...
+                </h2>
+                <p id="q-feedback" class="h-6 text-sm font-extrabold text-emerald-600 mt-1"></p>
+            </div>
+
+            <!-- ПАНЕЛЬ ОТВЕТОВ ДЛЯ ДВУХ ИГРОКОВ (РАЗДЕЛЬНЫЙ ЭКРАН) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-5">
+                
+                <!-- ПУЛЬТ ИГРОКА 1 (СИНИЙ) -->
+                <div id="panel-p1" class="bg-blue-600/95 backdrop-blur rounded-3xl p-3.5 sm:p-4 shadow-xl border-4 border-blue-300">
+                    <div class="flex items-center justify-between text-white mb-2.5 px-1">
+                        <span class="font-black text-sm sm:text-base flex items-center gap-1.5">
+                            <span>🦸‍♂️</span> <span id="ctrl-p1-name">Игрок 1</span>
+                        </span>
+                        <span id="p1-status-badge" class="text-xs bg-blue-800 px-2.5 py-0.5 rounded-full font-bold">Готов!</span>
+                    </div>
+                    <div id="p1-options" class="grid grid-cols-2 gap-2.5">
+                        <!-- Кнопки генерируются через JS -->
+                    </div>
+                </div>
+
+                <!-- ПУЛЬТ ИГРОКА 2 (КРАСНЫЙ) -->
+                <div id="panel-p2" class="bg-rose-600/95 backdrop-blur rounded-3xl p-3.5 sm:p-4 shadow-xl border-4 border-rose-300">
+                    <div class="flex items-center justify-between text-white mb-2.5 px-1">
+                        <span class="font-black text-sm sm:text-base flex items-center gap-1.5">
+                            <span>🦸‍♀️</span> <span id="ctrl-p2-name">Игрок 2</span>
+                        </span>
+                        <span id="p2-status-badge" class="text-xs bg-rose-800 px-2.5 py-0.5 rounded-full font-bold">Готов!</span>
+                    </div>
+                    <div id="p2-options" class="grid grid-cols-2 gap-2.5">
+                        <!-- Кнопки генерируются через JS -->
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ==================== ЭКРАН 3: ПОБЕДА И РЕЗУЛЬТАТЫ ==================== -->
+        <section id="screen-victory" class="hidden animate-pop">
+            <div class="bg-white rounded-3xl p-6 sm:p-10 max-w-xl mx-auto text-center shadow-2xl border-4 border-amber-400">
+                <div class="text-6xl sm:text-7xl mb-3 animate-float">🏆</div>
+                <span class="bg-amber-100 text-amber-800 font-black text-xs px-3 py-1 rounded-full uppercase tracking-wider">Игра окончена!</span>
+                <h2 id="victory-title" class="text-2xl sm:text-4xl font-black text-slate-800 mt-3 mb-2">
+                    Победил Игрок 1!
+                </h2>
+                <p id="victory-subtitle" class="text-slate-600 font-bold text-sm sm:text-base mb-6">
+                    Отличное знание русского языка!
+                </p>
+
+                <!-- Мини-табло -->
+                <div class="bg-slate-100 rounded-2xl p-4 mb-6 flex items-center justify-around border-2 border-slate-200">
+                    <div>
+                        <div class="text-xs font-bold text-blue-600" id="vic-p1-name">Игрок 1</div>
+                        <div class="text-2xl font-black text-slate-800" id="vic-p1-stat">0</div>
+                    </div>
+                    <div class="text-2xl font-black text-slate-400">:</div>
+                    <div>
+                        <div class="text-xs font-bold text-rose-600" id="vic-p2-name">Игрок 2</div>
+                        <div class="text-2xl font-black text-slate-800" id="vic-p2-stat">0</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <button onclick="restartCurrentGame()" class="btn-3d py-3.5 px-5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 border-emerald-700 text-white font-black text-base shadow-lg">
+                        🔄 Сыграть ещё раз
+                    </button>
+                    <button onclick="returnToMenu()" class="btn-3d py-3.5 px-5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 border-indigo-800 text-white font-black text-base shadow-lg">
+                        🏠 Выбрать другую игру
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- МОДАЛЬНОЕ ОКНО ПОМОЩИ / ПРАВИЛ -->
+    <div id="modal-help" class="hidden fixed inset-0 bg-slate-900/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border-4 border-indigo-300 animate-pop">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-black text-slate-800">📖 Как играть вдвоём?</h3>
+                <button onclick="toggleHelpModal()" class="w-8 h-8 rounded-full bg-slate-200 hover:bg-slate-300 font-black text-slate-700">✕</button>
+            </div>
+            <div class="space-y-3 text-sm text-slate-700 font-semibold">
+                <p><strong>1. Один экран на двоих:</strong> Сядьте рядом перед планшетом, ноутбуком или телефоном. Слева кнопки <span class="text-blue-600 font-black">Игрока 1</span>, справа — <span class="text-rose-600 font-black">Игрока 2</span>.</p>
+                <p><strong>2. Управление на клавиатуре (для ПК):</strong><br>
+                   • Игрок 1: клавиши <code class="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded font-bold">Q W E R</code> или <code class="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded font-bold">1 2 3 4</code><br>
+                   • Игрок 2: клавиши <code class="bg-rose-100 text-rose-800 px-1.5 py-0.5 rounded font-bold">U I O P</code> или <code class="bg-rose-100 text-rose-800 px-1.5 py-0.5 rounded font-bold">7 8 9 0</code>
+                </p>
+                <p><strong>3. Осторожно с ошибками!</strong> Если нажать неправильный ответ, ваши кнопки заблокируются на 1.2 секунды («Ой! Подумай ещё»), а соперник сможет вырваться вперёд!</p>
+            </div>
+            <button onclick="toggleHelpModal()" class="btn-3d w-full mt-5 py-3 rounded-2xl bg-indigo-600 border-indigo-800 text-white font-black">
+                ПОНЯТНО!
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // ==================== БАЗА ЛЁГКИХ ВОПРОСОВ ПО РУССКОМУ ЯЗЫКУ (4, 5, 6 КЛАССЫ) ====================
+        const QUESTIONS_BANK = [
+            // --- 4 КЛАСС (ОЧЕНЬ ЛЁГКИЕ: 32 вопроса) ---
+            { grade: 4, cat: "Орфография", q: "Какая буква пропущена: Ж...раф?", opts: ["и", "ы", "е", "а"], ans: 0 },
+            { grade: 4, cat: "Орфография", q: "Какая буква пропущена: Ч...шка?", opts: ["а", "я", "о", "у"], ans: 0 },
+            { grade: 4, cat: "Орфография", q: "Какая буква пропущена: Щ...ка?", opts: ["у", "ю", "о", "а"], ans: 0 },
+            { grade: 4, cat: "Орфография", q: "Какая буква пропущена: М...шина?", opts: ["а", "о", "е", "у"], ans: 0 },
+            { grade: 4, cat: "Орфография", q: "Какая буква пропущена: С...бака?", opts: ["о", "а", "у", "е"], ans: 0 },
+            { grade: 4, cat: "Орфография", q: "Какая буква пропущена: К...рова?", opts: ["о", "а", "у", "ы"], ans: 0 },
+            { grade: 4, cat: "Орфография", q: "Какая буква пропущена: М...локо?", opts: ["о", "а", "у", "е"], ans: 0 },
+            { grade: 4, cat: "Орфография", q: "Какая буква пропущена: Ш...рокий?", opts: ["и", "ы", "е", "а"], ans: 0 },
+            { grade: 4, cat: "Орфография", q: "Какая буква пропущена: Рощ...?", opts: ["а", "я", "о", "у"], ans: 0 },
+            { grade: 4, cat: "Орфография", q: "Какая буква пропущена: Ч...деса?", opts: ["у", "ю", "о", "а"], ans: 0 },
+            { grade: 4, cat: "Род слов", q: "Яблоко — какой род?", opts: ["Средний род", "Мужской род", "Женский род", "Нет рода"], ans: 0 },
+            { grade: 4, cat: "Род слов", q: "Стол — какой род?", opts: ["Мужской род", "Женский род", "Средний род", "Нет рода"], ans: 0 },
+            { grade: 4, cat: "Род слов", q: "Книга — какой род?", opts: ["Женский род", "Мужской род", "Средний род", "Нет рода"], ans: 0 },
+            { grade: 4, cat: "Род слов", q: "Солнце — какой род?", opts: ["Средний род", "Мужской род", "Женский род", "Нет рода"], ans: 0 },
+            { grade: 4, cat: "Род слов", q: "Мама — какой род?", opts: ["Женский род", "Мужской род", "Средний род", "Нет рода"], ans: 0 },
+            { grade: 4, cat: "Род слов", q: "Кот — какой род?", opts: ["Мужской род", "Женский род", "Средний род", "Нет рода"], ans: 0 },
+            { grade: 4, cat: "Антонимы", q: "Большой ↔ ... (наоборот)", opts: ["маленький", "высокий", "толстый", "длинный"], ans: 0 },
+            { grade: 4, cat: "Антонимы", q: "День ↔ ... (наоборот)", opts: ["ночь", "утро", "вечер", "обед"], ans: 0 },
+            { grade: 4, cat: "Антонимы", q: "Холодный ↔ ... (наоборот)", opts: ["горячий", "мокрый", "сладкий", "ледяной"], ans: 0 },
+            { grade: 4, cat: "Антонимы", q: "Белый ↔ ... (наоборот)", opts: ["чёрный", "красный", "синий", "жёлтый"], ans: 0 },
+            { grade: 4, cat: "Антонимы", q: "Весёлый ↔ ... (наоборот)", opts: ["грустный", "добрый", "смешной", "громкий"], ans: 0 },
+            { grade: 4, cat: "Антонимы", q: "Быстрый ↔ ... (наоборот)", opts: ["медленный", "лёгкий", "сильный", "умный"], ans: 0 },
+            { grade: 4, cat: "Антонимы", q: "Добрый ↔ ... (наоборот)", opts: ["злой", "весёлый", "красивый", "тихий"], ans: 0 },
+            { grade: 4, cat: "Словарь и загадки", q: "Кто говорит «мяу»?", opts: ["Кошка", "Собака", "Корова", "Утка"], ans: 0 },
+            { grade: 4, cat: "Словарь и загадки", q: "Сколько дней в неделе?", opts: ["Семь", "Пять", "Десять", "Шесть"], ans: 0 },
+            { grade: 4, cat: "Словарь и загадки", q: "Какое время года наступает после зимы?", opts: ["Весна", "Лето", "Осень", "Январь"], ans: 0 },
+            { grade: 4, cat: "Словарь и загадки", q: "Чем мы едим суп?", opts: ["Ложкой", "Вилкой", "Ножом", "Карандашом"], ans: 0 },
+            { grade: 4, cat: "Словарь и загадки", q: "Столица России — это город...", opts: ["Москва", "Ташкент", "Самарканд", "Сочи"], ans: 0 },
+            { grade: 4, cat: "Словарь и загадки", q: "Какого цвета трава летом?", opts: ["Зелёного", "Синего", "Красного", "Фиолетового"], ans: 0 },
+            { grade: 4, cat: "Словарь и загадки", q: "Зимой и летом одним цветом. Что это?", opts: ["Ёлка", "Берёза", "Яблоня", "Тюльпан"], ans: 0 },
+            { grade: 4, cat: "Словарь и загадки", q: "Сколько всего букв в русском алфавите?", opts: ["33", "30", "26", "40"], ans: 0 },
+            { grade: 4, cat: "Словарь и загадки", q: "Как называют детёныша собаки?", opts: ["Щенок", "Котёнок", "Телёнок", "Жеребёнок"], ans: 0 },
+
+            // --- 5 КЛАСС (ЛЁГКИЕ: 32 вопроса) ---
+            { grade: 5, cat: "Части речи", q: "Бегать — что это за часть речи?", opts: ["Глагол", "Существительное", "Прилагательное", "Местоимение"], ans: 0 },
+            { grade: 5, cat: "Части речи", q: "Красивый — что это за часть речи?", opts: ["Прилагательное", "Глагол", "Существительное", "Предлог"], ans: 0 },
+            { grade: 5, cat: "Части речи", q: "Школа — что это за часть речи?", opts: ["Существительное", "Глагол", "Прилагательное", "Наречие"], ans: 0 },
+            { grade: 5, cat: "Части речи", q: "Прыгать — что это за часть речи?", opts: ["Глагол", "Существительное", "Прилагательное", "Числительное"], ans: 0 },
+            { grade: 5, cat: "Части речи", q: "Добрый — что это за часть речи?", opts: ["Прилагательное", "Существительное", "Глагол", "Союз"], ans: 0 },
+            { grade: 5, cat: "Части речи", q: "Ученик — на какой вопрос отвечает это слово?", opts: ["Кто?", "Что?", "Какой?", "Что делает?"], ans: 0 },
+            { grade: 5, cat: "Части речи", q: "Тетрадь — на какой вопрос отвечает это слово?", opts: ["Что?", "Кто?", "Какая?", "Где?"], ans: 0 },
+            { grade: 5, cat: "Множественное число", q: "Один дом, а много — ...", opts: ["дома", "домы", "доми", "домов"], ans: 0 },
+            { grade: 5, cat: "Множественное число", q: "Одно окно, а много — ...", opts: ["окна", "окны", "окни", "оконы"], ans: 0 },
+            { grade: 5, cat: "Множественное число", q: "Один друг, а много — ...", opts: ["друзья", "други", "друга", "другы"], ans: 0 },
+            { grade: 5, cat: "Множественное число", q: "Один стул, а много — ...", opts: ["стулья", "стулы", "стули", "стула"], ans: 0 },
+            { grade: 5, cat: "Множественное число", q: "Одно яблоко, а много — ...", opts: ["яблоки", "яблока", "яблоков", "яблочи"], ans: 0 },
+            { grade: 5, cat: "Множественное число", q: "Одно дерево, а много — ...", opts: ["деревья", "деревы", "дерева", "дереви"], ans: 0 },
+            { grade: 5, cat: "Мягкий знак (Ь)", q: "Ноч... — нужен ли мягкий знак (Ь)?", opts: ["Да, ночь", "Нет, ноч", "Нужен Ъ", "Не знаю"], ans: 0 },
+            { grade: 5, cat: "Мягкий знак (Ь)", q: "Мяч... — нужен ли мягкий знак (Ь)?", opts: ["Нет, мяч", "Да, мячь", "Нужен Ъ", "Только с буквой Е"], ans: 0 },
+            { grade: 5, cat: "Мягкий знак (Ь)", q: "Мыш... — нужен ли мягкий знак (Ь)?", opts: ["Да, мышь", "Нет, мыш", "Нужен Ъ", "Пишется Ы"], ans: 0 },
+            { grade: 5, cat: "Мягкий знак (Ь)", q: "Врач... — нужен ли мягкий знак (Ь)?", opts: ["Нет, врач", "Да, врачь", "Нужен Ъ", "Пишется И"], ans: 0 },
+            { grade: 5, cat: "Мягкий знак (Ь)", q: "Доч... — нужен ли мягкий знак (Ь)?", opts: ["Да, дочь", "Нет, доч", "Нужен Ъ", "Пишется А"], ans: 0 },
+            { grade: 5, cat: "Безударные гласные", q: "Л...сной (проверочное слово: лес):", opts: ["е", "и", "а", "о"], ans: 0 },
+            { grade: 5, cat: "Безударные гласные", q: "В...да (проверочное слово: воды):", opts: ["о", "а", "у", "е"], ans: 0 },
+            { grade: 5, cat: "Безударные гласные", q: "Гр...бы (проверочное слово: гриб):", opts: ["и", "е", "ы", "а"], ans: 0 },
+            { grade: 5, cat: "Безударные гласные", q: "Сн...говик (проверочное слово: снег):", opts: ["е", "и", "а", "о"], ans: 0 },
+            { grade: 5, cat: "Безударные гласные", q: "М...ря (проверочное слово: море):", opts: ["о", "а", "е", "у"], ans: 0 },
+            { grade: 5, cat: "Синонимы", q: "Друг = ... (похожее по смыслу слово)", opts: ["товарищ", "враг", "сосед", "учитель"], ans: 0 },
+            { grade: 5, cat: "Синонимы", q: "Смелый = ... (похожее по смыслу слово)", opts: ["храбрый", "трусливый", "тихий", "грустный"], ans: 0 },
+            { grade: 5, cat: "Синонимы", q: "Большой = ... (похожее по смыслу слово)", opts: ["огромный", "маленький", "узкий", "короткий"], ans: 0 },
+            { grade: 5, cat: "Синонимы", q: "Идти = ... (похожее по смыслу слово)", opts: ["шагать", "спать", "сидеть", "стоять"], ans: 0 },
+            { grade: 5, cat: "Синонимы", q: "Красивый = ... (похожее по смыслу слово)", opts: ["прекрасный", "страшный", "грязный", "старый"], ans: 0 },
+            { grade: 5, cat: "Правила", q: "Сколько падежей в русском языке?", opts: ["6", "5", "7", "4"], ans: 0 },
+            { grade: 5, cat: "Правила", q: "Как пишется «(не)был» с глаголом?", opts: ["Раздельно (не был)", "Слитно (небыл)", "Через дефис", "Без буквы Е"], ans: 0 },
+            { grade: 5, cat: "Орфография", q: "Какая буква пропущена: ц...плёнок?", opts: ["ы", "и", "е", "а"], ans: 0 },
+            { grade: 5, cat: "Орфография", q: "Какая буква пропущена: ц...рк?", opts: ["и", "ы", "е", "у"], ans: 0 },
+
+            // --- 6 КЛАСС (ЛЁГКИЕ И ПОНЯТНЫЕ: 30 вопросов) ---
+            { grade: 6, cat: "Фразеологизмы", q: "«Кот наплакал» — это значит...", opts: ["Очень мало", "Очень много", "Громко кричать", "Любить кошек"], ans: 0 },
+            { grade: 6, cat: "Фразеологизмы", q: "«Бить баклуши» — это значит...", opts: ["Бездельничать", "Много работать", "Играть в мяч", "Рубить дрова"], ans: 0 },
+            { grade: 6, cat: "Фразеологизмы", q: "«Зарубить на носу» — это значит...", opts: ["Хорошо запомнить", "Поцарапать нос", "Забыть всё", "Обидеться"], ans: 0 },
+            { grade: 6, cat: "Фразеологизмы", q: "«Держать язык за зубами» — это значит...", opts: ["Молчать", "Вкусно есть", "Много болтать", "Кричать"], ans: 0 },
+            { grade: 6, cat: "Фразеологизмы", q: "«Водить за нос» — это значит...", opts: ["Обманывать", "Вести за руку", "Помогать другу", "Гулять в парке"], ans: 0 },
+            { grade: 6, cat: "Фразеологизмы", q: "«Рукой подать» — это значит...", opts: ["Очень близко", "Очень далеко", "Пожать руку", "Подарить подарок"], ans: 0 },
+            { grade: 6, cat: "Фразеологизмы", q: "«Считать ворон» — это значит...", opts: ["Быть невнимательным", "Любить птиц", "Учить математику", "Смотреть кино"], ans: 0 },
+            { grade: 6, cat: "Ударение", q: "Где правильное ударение в слове ЗВОНИТ?", opts: ["звонИт", "звОнит", "Оба верны", "Нет ударения"], ans: 0 },
+            { grade: 6, cat: "Ударение", q: "Где правильное ударение в слове ТОРТЫ?", opts: ["тОрты", "тортЫ", "Оба верны", "тОрта"], ans: 0 },
+            { grade: 6, cat: "Ударение", q: "Где правильное ударение в слове БАНТЫ?", opts: ["бАнты", "бантЫ", "Оба верны", "бАнта"], ans: 0 },
+            { grade: 6, cat: "Ударение", q: "Где правильное ударение в слове КРАСИВЕЕ?", opts: ["красИвее", "красивЕе", "крАсивее", "красивеЕ"], ans: 0 },
+            { grade: 6, cat: "Ударение", q: "Где правильное ударение в слове АЛФАВИТ?", opts: ["алфавИт", "алфАвит", "Алфавит", "Оба верны"], ans: 0 },
+            { grade: 6, cat: "Ударение", q: "Где правильное ударение в слове ШАРФЫ?", opts: ["шАрфы", "шарфЫ", "Оба верны", "шАрфа"], ans: 0 },
+            { grade: 6, cat: "Корень слова", q: "Какой корень в слове «лесной»?", opts: ["лес", "лесной", "ной", "лесн"], ans: 0 },
+            { grade: 6, cat: "Корень слова", q: "Какой корень в слове «водный»?", opts: ["вод", "водн", "ный", "вода"], ans: 0 },
+            { grade: 6, cat: "Корень слова", q: "Какой корень в слове «садовник»?", opts: ["сад", "садов", "ник", "садовн"], ans: 0 },
+            { grade: 6, cat: "Корень слова", q: "Какой корень в слове «грибной»?", opts: ["гриб", "грибн", "ной", "гри"], ans: 0 },
+            { grade: 6, cat: "Корень слова", q: "Какой корень в слове «подснежник»?", opts: ["снеж", "под", "ник", "снег"], ans: 0 },
+            { grade: 6, cat: "Падежи (окончания)", q: "У меня нет кого? (брат) → Нет ...", opts: ["брата", "брату", "братом", "о брате"], ans: 0 },
+            { grade: 6, cat: "Падежи (окончания)", q: "Я вижу кого? (сестра) → Вижу ...", opts: ["сестру", "сестре", "сестрой", "сестры"], ans: 0 },
+            { grade: 6, cat: "Падежи (окончания)", q: "Утром я иду куда? (школа) → Иду в ...", opts: ["школу", "школе", "школой", "школы"], ans: 0 },
+            { grade: 6, cat: "Падежи (окончания)", q: "Мы пишем чем? (ручка) → Пишем ...", opts: ["ручкой", "ручку", "ручке", "ручки"], ans: 0 },
+            { grade: 6, cat: "Падежи (окончания)", q: "Книга лежит на чём? (стол) → На ...", opts: ["столе", "столу", "столом", "стола"], ans: 0 },
+            { grade: 6, cat: "Приставки ПРЕ/ПРИ", q: "Какая буква пропущена: пр...ехать в город?", opts: ["и", "е", "а", "о"], ans: 0 },
+            { grade: 6, cat: "Приставки ПРЕ/ПРИ", q: "Какая буква пропущена: пр...школьный двор?", opts: ["и", "е", "ы", "а"], ans: 0 },
+            { grade: 6, cat: "Приставки ПРЕ/ПРИ", q: "Какая буква пропущена: пр...красный день?", opts: ["е", "и", "а", "о"], ans: 0 },
+            { grade: 6, cat: "Орфография", q: "Сколько Н пишется в слове «деревя...ый»?", opts: ["нн", "н", "ннн", "без н"], ans: 0 },
+            { grade: 6, cat: "Орфография", q: "Как правильно пишется число 11?", opts: ["одиннадцать", "одинадцать", "одиннацать", "адиннадцать"], ans: 0 },
+            { grade: 6, cat: "Род слов", q: "Определите род слова «кофе»:", opts: ["Мужской род", "Средний род", "Женский род", "Нет рода"], ans: 0 },
+            { grade: 6, cat: "Род слов", q: "Определите род слова «метро»:", opts: ["Средний род", "Мужской род", "Женский род", "Нет рода"], ans: 0 }
+        ];
+
+        // ==================== ЗВУКОВОЙ СИНТЕЗАТОР (WEB AUDIO API) ====================
+        let soundEnabled = true;
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playTone(freq, type, duration, delay = 0, vol = 0.15) {
+            if (!soundEnabled) return;
+            try {
+                initAudio();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime + delay);
+                gain.gain.setValueAtTime(vol, audioCtx.currentTime + delay);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + delay + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(audioCtx.currentTime + delay);
+                osc.stop(audioCtx.currentTime + delay + duration);
+            } catch (e) {}
+        }
+
+        function sfxCorrect() {
+            playTone(523.25, 'sine', 0.12, 0, 0.2);     // C5
+            playTone(659.25, 'sine', 0.12, 0.08, 0.2);  // E5
+            playTone(783.99, 'triangle', 0.22, 0.16, 0.22); // G5
+        }
+
+        function sfxWrong() {
+            playTone(180, 'sawtooth', 0.18, 0, 0.18);
+            playTone(140, 'sawtooth', 0.25, 0.12, 0.18);
+        }
+
+        function sfxVictory() {
+            const notes = [523.25, 659.25, 783.99, 1046.50];
+            notes.forEach((n, idx) => {
+                playTone(n, 'triangle', 0.25, idx * 0.12, 0.25);
+            });
+            playTone(1046.50, 'sine', 0.5, 0.5, 0.25);
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('btn-sound').textContent = soundEnabled ? '🔊' : '🔇';
+        }
+
+        // ==================== СОСТОЯНИЕ ИГРЫ ====================
+        const state = {
+            p1Name: "Игрок 1",
+            p2Name: "Игрок 2",
+            p1Wins: 0,
+            p2Wins: 0,
+            selectedGrade: 5, // 4, 5, 6 или 0 (Микс)
+            currentMode: null, // 'tug', 'race', 'quiz'
+            questionPool: [],
+            currentQuestion: null,
+            roundLocked: false,
+            p1Locked: false,
+            p2Locked: false,
+
+            // Переменные для режимов
+            tugPosition: 50, // 50 = центр, <= 12 победа Игрока 1, >= 88 победа Игрока 2
+            raceP1: 2,       // % прогресса (до 85%)
+            raceP2: 2,
+            quizRound: 1,
+            quizMaxRounds: 10,
+            quizP1Score: 0,
+            quizP2Score: 0
+        };
+
+        // ==================== НАСТРОЙКИ И МЕНЮ ====================
+        function updateNames() {
+            const n1 = document.getElementById('input-p1-name').value.trim() || "Игрок 1";
+            const n2 = document.getElementById('input-p2-name').value.trim() || "Игрок 2";
+            state.p1Name = n1;
+            state.p2Name = n2;
+
+            document.getElementById('header-p1-name').textContent = n1;
+            document.getElementById('header-p2-name').textContent = n2;
+            document.getElementById('ctrl-p1-name').textContent = n1;
+            document.getElementById('ctrl-p2-name').textContent = n2;
+            document.getElementById('race-p1-label').textContent = n1;
+            document.getElementById('race-p2-label').textContent = n2;
+            document.getElementById('quiz-p1-name').textContent = n1;
+            document.getElementById('quiz-p2-name').textContent = n2;
+        }
+
+        function selectGrade(grade) {
+            state.selectedGrade = grade;
+            const btns = document.querySelectorAll('.grade-btn');
+            btns.forEach(btn => {
+                const g = parseInt(btn.getAttribute('data-grade'));
+                if (g === grade) {
+                    btn.className = "grade-btn py-2 rounded-xl font-black text-xs sm:text-sm bg-amber-500 border-2 border-amber-600 text-white shadow-md transition";
+                } else {
+                    btn.className = "grade-btn py-2 rounded-xl font-black text-xs sm:text-sm bg-white border-2 border-amber-300 text-slate-700 hover:bg-amber-100 transition";
+                }
+            });
+
+            const descMap = {
+                4: "4 класс: Жи-ши, род слов, антонимы и простые загадки",
+                5: "5 класс: Простые части речи, синонимы, мягкий знак",
+                6: "6 класс: Понятные фразеологизмы, ударения и корни слов",
+                0: "Все классы (4–6): Лёгкие и интересные вопросы обо всём!"
+            };
+            document.getElementById('grade-desc').textContent = descMap[grade];
+            playTone(600, 'sine', 0.08, 0, 0.1);
+        }
+
+        function toggleHelpModal() {
+            const modal = document.getElementById('modal-help');
+            modal.classList.toggle('hidden');
+        }
+
+        function showScreen(screenId) {
+            ['screen-menu', 'screen-game', 'screen-victory'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(screenId).classList.remove('hidden');
+
+            const homeBtn = document.getElementById('btn-home');
+            if (screenId === 'screen-menu') {
+                homeBtn.classList.add('hidden');
+            } else {
+                homeBtn.classList.remove('hidden');
+            }
+        }
+
+        function returnToMenu() {
+            state.currentMode = null;
+            state.roundLocked = true;
+            showScreen('screen-menu');
+        }
+
+        // ==================== ПОДГОТОВКА ВОПРОСОВ ====================
+        function refillQuestionPool() {
+            let filtered = state.selectedGrade === 0
+                ? [...QUESTIONS_BANK]
+                : QUESTIONS_BANK.filter(item => item.grade === state.selectedGrade);
+
+            // Перемешивание Фишера-Йейтса
+            for (let i = filtered.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [filtered[i], filtered[j]] = [filtered[j], filtered[i]];
+            }
+            state.questionPool = filtered;
+        }
+
+        function getNextQuestion() {
+            if (state.questionPool.length === 0) {
+                refillQuestionPool();
+            }
+            const raw = state.questionPool.pop();
+            // Перемешиваем варианты ответов, сохраняя индекс правильного
+            const optionsWithFlag = raw.opts.map((text, idx) => ({
+                text,
+                isCorrect: idx === raw.ans
+            }));
+            for (let i = optionsWithFlag.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [optionsWithFlag[i], optionsWithFlag[j]] = [optionsWithFlag[j], optionsWithFlag[i]];
+            }
+            return {
+                grade: raw.grade,
+                cat: raw.cat,
+                q: raw.q,
+                options: optionsWithFlag
+            };
+        }
+
+        // ==================== ЗАПУСК РЕЖИМА ИГРЫ ====================
+        function startGame(mode) {
+            initAudio();
+            updateNames();
+            state.currentMode = mode;
+            refillQuestionPool();
+
+            // Скрыть все арены
+            ['arena-tug', 'arena-race', 'arena-quiz'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+
+            if (mode === 'tug') {
+                state.tugPosition = 50;
+                document.getElementById('arena-tug').classList.remove('hidden');
+                updateTugVisuals();
+            } else if (mode === 'race') {
+                state.raceP1 = 2;
+                state.raceP2 = 2;
+                document.getElementById('arena-race').classList.remove('hidden');
+                document.getElementById('race-p1-freeze').classList.add('hidden');
+                document.getElementById('race-p2-freeze').classList.add('hidden');
+                updateRaceVisuals();
+            } else if (mode === 'quiz') {
+                state.quizRound = 1;
+                state.quizP1Score = 0;
+                state.quizP2Score = 0;
+                document.getElementById('arena-quiz').classList.remove('hidden');
+                updateQuizVisuals();
+            }
+
+            showScreen('screen-game');
+            loadRound();
+        }
+
+        function restartCurrentGame() {
+            if (state.currentMode) {
+                startGame(state.currentMode);
+            }
+        }
+
+        // ==================== ОТРИСОВКА РАУНДА И КНОПОК ====================
+        function loadRound() {
+            state.roundLocked = false;
+            state.p1Locked = false;
+            state.p2Locked = false;
+
+            const qObj = getNextQuestion();
+            state.currentQuestion = qObj;
+
+            document.getElementById('q-category').textContent = qObj.cat;
+            document.getElementById('q-grade-badge').textContent = `${qObj.grade} класс`;
+            document.getElementById('q-text').textContent = qObj.q;
+            document.getElementById('q-feedback').textContent = "";
+
+            document.getElementById('p1-status-badge').textContent = "Ваш ход!";
+            document.getElementById('p1-status-badge').className = "text-xs bg-blue-800 px-2.5 py-0.5 rounded-full font-bold";
+            document.getElementById('p2-status-badge').textContent = "Ваш ход!";
+            document.getElementById('p2-status-badge').className = "text-xs bg-rose-800 px-2.5 py-0.5 rounded-full font-bold";
+
+            renderPlayerButtons(1, qObj.options);
+            renderPlayerButtons(2, qObj.options);
+        }
+
+        function renderPlayerButtons(playerNum, options) {
+            const container = document.getElementById(`p${playerNum}-options`);
+            container.innerHTML = "";
+            const keys = playerNum === 1 ? ['Q', 'W', 'E', 'R'] : ['U', 'I', 'O', 'P'];
+
+            options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.id = `btn-p${playerNum}-${idx}`;
+                btn.className = "btn-3d bg-white hover:bg-amber-50 border-slate-300 text-slate-800 rounded-2xl p-3 sm:p-3.5 font-extrabold text-sm sm:text-base shadow-md flex items-center justify-between gap-2 text-left transition";
+                btn.innerHTML = `
+                    <span class="leading-tight">${opt.text}</span>
+                    <span class="hidden lg:inline-block text-[10px] font-black px-1.5 py-0.5 rounded bg-slate-200 text-slate-600">${keys[idx]}</span>
+                `;
+                btn.onclick = () => handlePlayerAnswer(playerNum, idx);
+                container.appendChild(btn);
+            });
+        }
+
+        // ==================== ОБРАБОТКА ОТВЕТА ИГРОКА ====================
+        function handlePlayerAnswer(playerNum, optionIdx) {
+            if (!state.currentMode || state.roundLocked) return;
+            if (playerNum === 1 && state.p1Locked) return;
+            if (playerNum === 2 && state.p2Locked) return;
+
+            const chosen = state.currentQuestion.options[optionIdx];
+            const btn = document.getElementById(`btn-p${playerNum}-${optionIdx}`);
+
+            if (chosen.isCorrect) {
+                // ПРАВИЛЬНЫЙ ОТВЕТ!
+                state.roundLocked = true;
+                sfxCorrect();
+
+                // Подсветка правильного ответа у обоих игроков
+                state.currentQuestion.options.forEach((o, i) => {
+                    if (o.isCorrect) {
+                        const b1 = document.getElementById(`btn-p1-${i}`);
+                        const b2 = document.getElementById(`btn-p2-${i}`);
+                        if (b1) b1.className = "btn-3d bg-emerald-500 border-emerald-700 text-white rounded-2xl p-3 sm:p-3.5 font-black text-sm sm:text-base shadow-md flex items-center justify-between";
+                        if (b2) b2.className = "btn-3d bg-emerald-500 border-emerald-700 text-white rounded-2xl p-3 sm:p-3.5 font-black text-sm sm:text-base shadow-md flex items-center justify-between";
+                    }
+                });
+
+                const winnerName = playerNum === 1 ? state.p1Name : state.p2Name;
+                const feedbackEl = document.getElementById('q-feedback');
+                feedbackEl.textContent = `✅ Верно! ${winnerName} отвечает быстрее!`;
+                feedbackEl.className = "h-6 text-sm font-black text-emerald-600 mt-1";
+
+                applyModeReward(playerNum);
+
+            } else {
+                // НЕПРАВИЛЬНЫЙ ОТВЕТ (Штрафная блокировка на 1.5 сек)
+                sfxWrong();
+                if (btn) {
+                    btn.className = "btn-3d bg-red-600 border-red-800 text-white rounded-2xl p-3 sm:p-3.5 font-extrabold text-sm sm:text-base shadow-md flex items-center justify-between animate-shake";
+                }
+
+                const panel = document.getElementById(`panel-p${playerNum}`);
+                panel.classList.add('animate-shake');
+                setTimeout(() => panel.classList.remove('animate-shake'), 400);
+
+                lockPlayerTemporarily(playerNum);
+            }
+        }
+
+        function lockPlayerTemporarily(playerNum) {
+            if (playerNum === 1) state.p1Locked = true;
+            else state.p2Locked = true;
+
+            const badge = document.getElementById(`p${playerNum}-status-badge`);
+            badge.textContent = "😅 Ой! Подумай ещё...";
+            badge.className = "text-xs bg-amber-400 text-slate-900 px-2.5 py-0.5 rounded-full font-black";
+
+            if (state.currentMode === 'race') {
+                document.getElementById(`race-p${playerNum}-freeze`).classList.remove('hidden');
+            }
+
+            // Отключаем кнопки игрока
+            for (let i = 0; i < 4; i++) {
+                const b = document.getElementById(`btn-p${playerNum}-${i}`);
+                if (b) b.disabled = true;
+            }
+
+            setTimeout(() => {
+                if (state.roundLocked) return;
+                if (playerNum === 1) state.p1Locked = false;
+                else state.p2Locked = false;
+
+                badge.textContent = "Ваш ход!";
+                badge.className = playerNum === 1
+                    ? "text-xs bg-blue-800 px-2.5 py-0.5 rounded-full font-bold"
+                    : "text-xs bg-rose-800 px-2.5 py-0.5 rounded-full font-bold";
+
+                if (state.currentMode === 'race') {
+                    document.getElementById(`race-p${playerNum}-freeze`).classList.add('hidden');
+                }
+
+                for (let i = 0; i < 4; i++) {
+                    const b = document.getElementById(`btn-p${playerNum}-${i}`);
+                    if (b) b.disabled = false;
+                }
+            }, 1200);
+        }
+
+        // ==================== ЛОГИКА ОЧКОВ И ПОБЕДЫ ДЛЯ КАЖДОГО РЕЖИМА ====================
+        function applyModeReward(playerNum) {
+            if (state.currentMode === 'tug') {
+                // Игрок 1 тянет влево (-9%), Игрок 2 тянет вправо (+9%)
+                state.tugPosition += (playerNum === 1 ? -9.5 : 9.5);
+                updateTugVisuals();
+
+                if (state.tugPosition <= 12) {
+                    setTimeout(() => declareWinner(1, "Мощная победа в перетягивании каната!"), 800);
+                } else if (state.tugPosition >= 88) {
+                    setTimeout(() => declareWinner(2, "Мощная победа в перетягивании каната!"), 800);
+                } else {
+                    setTimeout(loadRound, 950);
+                }
+
+            } else if (state.currentMode === 'race') {
+                // Ракета летит вперёд (+14%)
+                if (playerNum === 1) state.raceP1 = Math.min(84, state.raceP1 + 14);
+                else state.raceP2 = Math.min(84, state.raceP2 + 14);
+                updateRaceVisuals();
+
+                if (state.raceP1 >= 84) {
+                    setTimeout(() => declareWinner(1, "Ракета прилетела к финишу первой!"), 800);
+                } else if (state.raceP2 >= 84) {
+                    setTimeout(() => declareWinner(2, "Ракета прилетела к финишу первой!"), 800);
+                } else {
+                    setTimeout(loadRound, 950);
+                }
+
+            } else if (state.currentMode === 'quiz') {
+                if (playerNum === 1) state.quizP1Score += 10;
+                else state.quizP2Score += 10;
+                updateQuizVisuals();
+
+                if (state.quizRound >= state.quizMaxRounds) {
+                    setTimeout(() => {
+                        if (state.quizP1Score > state.quizP2Score) {
+                            declareWinner(1, `Счёт: ${state.quizP1Score} против ${state.quizP2Score}!`);
+                        } else if (state.quizP2Score > state.quizP1Score) {
+                            declareWinner(2, `Счёт: ${state.quizP2Score} против ${state.quizP1Score}!`);
+                        } else {
+                            declareWinner(0, `Боевая ничья со счётом ${state.quizP1Score}:${state.quizP2Score}!`);
+                        }
+                    }, 900);
+                } else {
+                    state.quizRound++;
+                    setTimeout(() => {
+                        updateQuizVisuals();
+                        loadRound();
+                    }, 950);
+                }
+            }
+        }
+
+        function updateTugVisuals() {
+            const group = document.getElementById('tug-rope-group');
+            group.style.left = `${state.tugPosition}%`;
+        }
+
+        function updateRaceVisuals() {
+            document.getElementById('race-p1-rocket').style.left = `${state.raceP1}%`;
+            document.getElementById('race-p2-rocket').style.left = `${state.raceP2}%`;
+        }
+
+        function updateQuizVisuals() {
+            document.getElementById('quiz-p1-score').textContent = state.quizP1Score;
+            document.getElementById('quiz-p2-score').textContent = state.quizP2Score;
+            document.getElementById('quiz-round-num').textContent = state.quizRound;
+        }
+
+        // ==================== ЭКРАН ПОБЕДЫ И КОНФЕТТИ ====================
+        function declareWinner(winnerNum, subtitle) {
+            sfxVictory();
+            spawnConfetti();
+
+            if (winnerNum === 1) state.p1Wins++;
+            else if (winnerNum === 2) state.p2Wins++;
+
+            document.getElementById('header-p1-wins').textContent = state.p1Wins;
+            document.getElementById('header-p2-wins').textContent = state.p2Wins;
+
+            const titleEl = document.getElementById('victory-title');
+            if (winnerNum === 1) {
+                titleEl.textContent = `Победил(а) ${state.p1Name}! 🎉`;
+                titleEl.className = "text-2xl sm:text-4xl font-black text-blue-600 mt-3 mb-2";
+            } else if (winnerNum === 2) {
+                titleEl.textContent = `Победил(а) ${state.p2Name}! 🎉`;
+                titleEl.className = "text-2xl sm:text-4xl font-black text-rose-600 mt-3 mb-2";
+            } else {
+                titleEl.textContent = "Победила Дружба! 🤝";
+                titleEl.className = "text-2xl sm:text-4xl font-black text-amber-600 mt-3 mb-2";
+            }
+
+            document.getElementById('victory-subtitle').textContent = subtitle;
+            document.getElementById('vic-p1-name').textContent = state.p1Name;
+            document.getElementById('vic-p2-name').textContent = state.p2Name;
+            document.getElementById('vic-p1-stat').textContent = `${state.p1Wins} побед`;
+            document.getElementById('vic-p2-stat').textContent = `${state.p2Wins} побед`;
+
+            showScreen('screen-victory');
+        }
+
+        function spawnConfetti() {
+            const colors = ['#3b82f6', '#f43f5e', '#f59e0b', '#10b981', '#8b5cf6'];
+            for (let i = 0; i < 45; i++) {
+                const conf = document.createElement('div');
+                conf.className = 'confetti-piece';
+                conf.style.left = Math.random() * 100 + 'vw';
+                conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                conf.style.animationDuration = (Math.random() * 2 + 1.8) + 's';
+                conf.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                document.body.appendChild(conf);
+                setTimeout(() => conf.remove(), 4000);
+            }
+        }
+
+        // ==================== УПРАВЛЕНИЕ С КЛАВИАТУРЫ ====================
+        document.addEventListener('keydown', (e) => {
+            if (!state.currentMode || document.getElementById('screen-game').classList.contains('hidden')) return;
+            // Игнорируем ввод, если открыто окно помощи
+            if (!document.getElementById('modal-help').classList.contains('hidden')) return;
+
+            const code = e.code;
+            // Игрок 1: Q, W, E, R или 1, 2, 3, 4
+            if (code === 'KeyQ' || code === 'Digit1') handlePlayerAnswer(1, 0);
+            else if (code === 'KeyW' || code === 'Digit2') handlePlayerAnswer(1, 1);
+            else if (code === 'KeyE' || code === 'Digit3') handlePlayerAnswer(1, 2);
+            else if (code === 'KeyR' || code === 'Digit4') handlePlayerAnswer(1, 3);
+
+            // Игрок 2: U, I, O, P или 7, 8, 9, 0
+            else if (code === 'KeyU' || code === 'Digit7') handlePlayerAnswer(2, 0);
+            else if (code === 'KeyI' || code === 'Digit8') handlePlayerAnswer(2, 1);
+            else if (code === 'KeyO' || code === 'Digit9') handlePlayerAnswer(2, 2);
+            else if (code === 'KeyP' || code === 'Digit0') handlePlayerAnswer(2, 3);
+        });
+    </script>
+</body>
+</html>
