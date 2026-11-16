@@ -22,15 +22,9 @@
             color: #1e293b;
         }
 
-        /* Анимации для игровых элементов */
         @keyframes float {
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-8px); }
-        }
-
-        @keyframes pulseGlow {
-            0%, 100% { box-shadow: 0 0 15px rgba(250, 204, 21, 0.4); }
-            50% { box-shadow: 0 0 28px rgba(250, 204, 21, 0.85); }
         }
 
         @keyframes shake {
@@ -47,7 +41,7 @@
         }
 
         @keyframes popIn {
-            0% { transform: scale(0.8); opacity: 0; }
+            0% { transform: scale(0.85); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
         }
 
@@ -60,7 +54,7 @@
         }
 
         .animate-pop {
-            animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
         .rocket-flame {
@@ -68,7 +62,6 @@
             transform-origin: left center;
         }
 
-        /* Игровые 3D кнопки */
         .btn-3d {
             transition: all 0.1s ease;
             border-bottom-width: 5px;
@@ -78,11 +71,10 @@
             border-bottom-width: 2px;
         }
         .btn-3d:disabled {
-            opacity: 0.55;
+            opacity: 0.65;
             cursor: not-allowed;
         }
 
-        /* Фон звезд для гонок на ракетах */
         .space-bg {
             background-color: #090d16;
             background-image: 
@@ -93,12 +85,10 @@
             background-position: 0 0, 40px 60px, 130px 270px;
         }
 
-        /* Трава и небо для перетягивания каната */
         .tug-sky {
             background: linear-gradient(180deg, #38bdf8 0%, #bae6fd 72%, #22c55e 72%, #16a34a 100%);
         }
 
-        /* Конфетти */
         .confetti-piece {
             position: fixed;
             width: 10px;
@@ -117,6 +107,26 @@
     </style>
 </head>
 <body class="flex flex-col justify-between">
+
+    <!-- ЭКРАН ВХОДА ПО ПАРОЛЮ (mirjalol) -->
+    <div id="login-gate" class="fixed inset-0 z-50 bg-gradient-to-br from-slate-950 via-indigo-950 to-blue-950 flex items-center justify-center p-4">
+        <div class="bg-white/95 backdrop-blur-md rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl border-4 border-amber-400 animate-pop">
+            <div class="w-20 h-20 mx-auto mb-3 rounded-2xl bg-indigo-100 flex items-center justify-center text-5xl shadow-inner">
+                🔐
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-black text-slate-800">Вход в игру</h2>
+            <p class="text-sm text-slate-500 font-bold mt-1 mb-5">Введите секретный код доступа, чтобы начать соревнование</p>
+            
+            <form onsubmit="checkPassword(event)" class="space-y-3">
+                <input id="password-input" type="password" placeholder="Введите код..." autocomplete="off"
+                    class="w-full text-center text-xl font-black tracking-widest bg-slate-100 border-2 border-indigo-300 focus:border-indigo-600 rounded-2xl px-4 py-3.5 text-slate-800 outline-none transition">
+                <p id="password-error" class="h-5 text-xs font-extrabold text-rose-600"></p>
+                <button type="submit" class="btn-3d w-full py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 border-indigo-800 text-white font-black text-lg shadow-lg">
+                    ВОЙТИ В ИГРУ 🚀
+                </button>
+            </form>
+        </div>
+    </div>
 
     <!-- ВЕРХНЯЯ ПАНЕЛЬ НАВИГАЦИИ -->
     <header class="w-full bg-slate-900/80 backdrop-blur-md border-b border-white/10 px-4 py-2.5 flex items-center justify-between text-white z-30">
@@ -177,21 +187,19 @@
                         <div class="w-full">
                             <label class="block text-xs font-extrabold text-blue-700 uppercase">Игрок 1 (Слева)</label>
                             <input id="input-p1-name" type="text" value="Игрок 1" maxlength="14" oninput="updateNames()"
-                                class="w-full mt-0.5 bg-white border-2 border-blue-300 focus:border-blue-600 rounded-xl px-3 py-1.5 font-extrabold text-slate-800 outline-none text-sm sm:text-base">
-                            <span class="text-[11px] text-blue-500 font-semibold">Клавиши: Q, W, E, R или 1–4</span>
+                                class="w-full mt-1 bg-white border border-blue-300 rounded-xl px-3 py-1.5 font-bold text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                     </div>
 
                     <!-- Выбор класса -->
                     <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-3 text-center">
-                        <label class="block text-xs font-extrabold text-amber-800 uppercase mb-2">🎓 Выберите класс (лёгкие вопросы)</label>
+                        <label class="block text-xs font-extrabold text-amber-800 uppercase mb-1.5">Выберите уровень (класс)</label>
                         <div class="grid grid-cols-4 gap-1.5" id="grade-selector">
-                            <button onclick="selectGrade(4)" data-grade="4" class="grade-btn py-2 rounded-xl font-black text-sm bg-white border-2 border-amber-300 text-slate-700 hover:bg-amber-100 transition">4 кл</button>
-                            <button onclick="selectGrade(5)" data-grade="5" class="grade-btn py-2 rounded-xl font-black text-sm bg-amber-500 border-2 border-amber-600 text-white shadow-md transition">5 кл</button>
-                            <button onclick="selectGrade(6)" data-grade="6" class="grade-btn py-2 rounded-xl font-black text-sm bg-white border-2 border-amber-300 text-slate-700 hover:bg-amber-100 transition">6 кл</button>
-                            <button onclick="selectGrade(0)" data-grade="0" class="grade-btn py-2 rounded-xl font-black text-xs sm:text-sm bg-white border-2 border-amber-300 text-slate-700 hover:bg-amber-100 transition">Все</button>
+                            <button onclick="selectGrade(4)" data-grade="4" class="grade-btn py-2 rounded-xl font-black text-xs sm:text-sm bg-white border-2 border-amber-300 text-slate-700 hover:bg-amber-100 transition">4 кл</button>
+                            <button onclick="selectGrade(5)" data-grade="5" class="grade-btn py-2 rounded-xl font-black text-xs sm:text-sm bg-amber-500 border-2 border-amber-600 text-white shadow-sm transition">5 кл</button>
+                            <button onclick="selectGrade(6)" data-grade="6" class="grade-btn py-2 rounded-xl font-black text-xs sm:text-sm bg-white border-2 border-amber-300 text-slate-700 hover:bg-amber-100 transition">6 кл</button>
+                            <button onclick="selectGrade(0)" data-grade="0" class="grade-btn py-2 rounded-xl font-black text-xs sm:text-sm bg-white border-2 border-amber-300 text-slate-700 hover:bg-amber-100 transition">Микс</button>
                         </div>
-                        <p id="grade-desc" class="text-[11px] text-amber-700 font-bold mt-1.5">5 класс: Простые части речи, синонимы, мягкий знак</p>
                     </div>
 
                     <!-- Игрок 2 (Красный) -->
@@ -202,74 +210,109 @@
                         <div class="w-full">
                             <label class="block text-xs font-extrabold text-rose-700 uppercase">Игрок 2 (Справа)</label>
                             <input id="input-p2-name" type="text" value="Игрок 2" maxlength="14" oninput="updateNames()"
-                                class="w-full mt-0.5 bg-white border-2 border-rose-300 focus:border-rose-600 rounded-xl px-3 py-1.5 font-extrabold text-slate-800 outline-none text-sm sm:text-base">
-                            <span class="text-[11px] text-rose-500 font-semibold">Клавиши: U, I, O, P или 7–0</span>
+                                class="w-full mt-1 bg-white border border-rose-300 rounded-xl px-3 py-1.5 font-bold text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500">
                         </div>
                     </div>
 
                 </div>
             </div>
 
-            <!-- Выбор режима игры (3 карточки) -->
-            <div class="text-center">
-                <h2 class="text-white font-black text-xl sm:text-2xl tracking-wide drop-shadow">ВЫБЕРИТЕ ИГРУ ДЛЯ ДВОИХ</h2>
-                <p class="text-indigo-200 text-xs sm:text-sm font-semibold">Нажимайте на экран (сенсор) или используйте клавиатуру!</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
+            <!-- Карточки выбора 5 игр -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
                 
-                <!-- ИГРА 1: ПЕРЕТЯГИВАНИЕ КАНАТА -->
-                <div class="bg-white rounded-3xl p-5 shadow-xl border-b-8 border-emerald-500 flex flex-col justify-between hover:-translate-y-1 transition duration-200">
-                    <div>
-                        <div class="w-full h-32 rounded-2xl tug-sky mb-4 flex items-center justify-center relative overflow-hidden border-2 border-emerald-200">
-                            <div class="text-4xl animate-float">🤼‍♂️🪢🤼‍♀️</div>
-                            <span class="absolute top-2 right-2 bg-emerald-600 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase">Сила знаний</span>
-                        </div>
-                        <h3 class="text-xl font-black text-slate-800 mb-1">1. Перетягивание каната</h3>
-                        <p class="text-sm text-slate-600 font-semibold leading-relaxed mb-4">
-                            Отвечайте быстрее соперника на вопросы по орфографии, роду имён существительных и словарным словам, чтобы перетянуть канат на свою сторону!
-                        </p>
-                    </div>
-                    <button onclick="startGame('tug')" class="btn-3d w-full py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 border-emerald-700 text-white font-black text-lg shadow-lg">
-                        ИГРАТЬ ▶
-                    </button>
-                </div>
-
-                <!-- ИГРА 2: КОСМИЧЕСКИЕ ГОНКИ -->
-                <div class="bg-white rounded-3xl p-5 shadow-xl border-b-8 border-indigo-500 flex flex-col justify-between hover:-translate-y-1 transition duration-200">
-                    <div>
-                        <div class="w-full h-32 rounded-2xl space-bg mb-4 flex items-center justify-center relative overflow-hidden border-2 border-indigo-300">
-                            <div class="flex flex-col gap-2 text-3xl">
-                                <span class="animate-pulse">🚀💨</span>
-                                <span class="ml-8">🛸✨</span>
+                <!-- Игра 1: Перетягивание каната -->
+                <div class="bg-gradient-to-b from-sky-400 to-emerald-500 rounded-3xl p-1 shadow-xl hover:-translate-y-1 transition duration-200">
+                    <div class="bg-white rounded-[22px] p-5 h-full flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="bg-emerald-100 text-emerald-800 text-xs font-black px-3 py-1 rounded-full">СИЛА ЗНАНИЙ</span>
+                                <span class="text-3xl animate-float">🪢</span>
                             </div>
-                            <span class="absolute top-2 right-2 bg-indigo-600 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase">На скорость</span>
+                            <h2 class="text-xl font-black text-slate-800 mb-1.5">1. Перетягивание каната</h2>
+                            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4">
+                                У каждого свой вопрос! Отвечай правильно, чтобы перетянуть канат и соперника через центральную линию на свою сторону!
+                            </p>
                         </div>
-                        <h3 class="text-xl font-black text-slate-800 mb-1">2. Гонки на ракетах</h3>
-                        <p class="text-sm text-slate-600 font-semibold leading-relaxed mb-4">
-                            Каждый правильный ответ даёт мощное ускорение вашей ракете! Ошибка ненадолго замораживает двигатель. Долетите до финиша первым!
-                        </p>
+                        <button onclick="startGame('tug')" class="btn-3d w-full py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 border-emerald-700 text-white font-black text-base shadow-md">
+                            ИГРАТЬ ВДВОЁМ ▶
+                        </button>
                     </div>
-                    <button onclick="startGame('race')" class="btn-3d w-full py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 border-indigo-800 text-white font-black text-lg shadow-lg">
-                        ПОЛЕТЕЛИ ▶
-                    </button>
                 </div>
 
-                <!-- ИГРА 3: БИТВА ЗА ЗАМОК (ВИКТОРИНА) -->
-                <div class="bg-white rounded-3xl p-5 shadow-xl border-b-8 border-amber-500 flex flex-col justify-between hover:-translate-y-1 transition duration-200">
-                    <div>
-                        <div class="w-full h-32 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 mb-4 flex items-center justify-center relative overflow-hidden border-2 border-amber-200">
-                            <div class="text-5xl animate-float">🏰⚡👑</div>
-                            <span class="absolute top-2 right-2 bg-amber-800 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase">10 раундов</span>
+                <!-- Игра 2: Космические гонки -->
+                <div class="bg-gradient-to-b from-indigo-500 to-purple-600 rounded-3xl p-1 shadow-xl hover:-translate-y-1 transition duration-200">
+                    <div class="bg-white rounded-[22px] p-5 h-full flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="bg-indigo-100 text-indigo-800 text-xs font-black px-3 py-1 rounded-full">СКОРОСТЬ УМА</span>
+                                <span class="text-3xl animate-float">🚀</span>
+                            </div>
+                            <h2 class="text-xl font-black text-slate-800 mb-1.5">2. Гонки на ракетах</h2>
+                            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4">
+                                Каждый правильный ответ даёт мощное ускорение твоей ракете! Доберись до финишной планеты быстрее соперника!
+                            </p>
                         </div>
-                        <h3 class="text-xl font-black text-slate-800 mb-1">3. Битва за Замок</h3>
-                        <p class="text-sm text-slate-600 font-semibold leading-relaxed mb-4">
-                            Классическая дуэль эрудитов: падежи, части речи, ударения и фразеологизмы. Кто первым наберёт 100 очков за 10 раундов?
-                        </p>
+                        <button onclick="startGame('race')" class="btn-3d w-full py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 border-indigo-800 text-white font-black text-base shadow-md">
+                            СТАРТ ПОЛЁТА ▶
+                        </button>
                     </div>
-                    <button onclick="startGame('quiz')" class="btn-3d w-full py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-400 border-amber-700 text-white font-black text-lg shadow-lg">
-                        В БОЙ ▶
-                    </button>
+                </div>
+
+                <!-- Игра 3: Битва знаний (10 вопросов) -->
+                <div class="bg-gradient-to-b from-amber-400 to-orange-500 rounded-3xl p-1 shadow-xl hover:-translate-y-1 transition duration-200">
+                    <div class="bg-white rounded-[22px] p-5 h-full flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="bg-amber-100 text-amber-800 text-xs font-black px-3 py-1 rounded-full">10 ВОПРОСОВ</span>
+                                <span class="text-3xl animate-float">⚡</span>
+                            </div>
+                            <h2 class="text-xl font-black text-slate-800 mb-1.5">3. Блиц-турнир</h2>
+                            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4">
+                                У каждого игрока свои 10 вопросов! Отвечай верно, набирай баллы и стань чемпионом русского языка!
+                            </p>
+                        </div>
+                        <button onclick="startGame('quiz')" class="btn-3d w-full py-3 rounded-2xl bg-amber-500 hover:bg-amber-400 border-amber-700 text-white font-black text-base shadow-md">
+                            НАЧАТЬ ТУРНИР ▶
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Игра 4: Футбол Пенальти -->
+                <div class="bg-gradient-to-b from-lime-400 to-green-600 rounded-3xl p-1 shadow-xl hover:-translate-y-1 transition duration-200">
+                    <div class="bg-white rounded-[22px] p-5 h-full flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="bg-lime-100 text-lime-800 text-xs font-black px-3 py-1 rounded-full">ДО 5 ГОЛОВ</span>
+                                <span class="text-3xl animate-float">⚽</span>
+                            </div>
+                            <h2 class="text-xl font-black text-slate-800 mb-1.5">4. Футбол: Пенальти</h2>
+                            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4">
+                                Ответь правильно на свой вопрос — и твой футболист пробьёт точный удар мимо вратаря! Забей 5 голов первым!
+                            </p>
+                        </div>
+                        <button onclick="startGame('football')" class="btn-3d w-full py-3 rounded-2xl bg-green-600 hover:bg-green-500 border-green-800 text-white font-black text-base shadow-md">
+                            НА ПОЛЕ! ⚽ ▶
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Игра 5: Лопни шарик -->
+                <div class="bg-gradient-to-b from-pink-400 to-rose-500 rounded-3xl p-1 shadow-xl hover:-translate-y-1 transition duration-200 sm:col-span-2 lg:col-span-2">
+                    <div class="bg-white rounded-[22px] p-5 h-full flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="bg-pink-100 text-pink-800 text-xs font-black px-3 py-1 rounded-full">СУПЕР РЕАКЦИЯ</span>
+                                <span class="text-3xl animate-float">🎈</span>
+                            </div>
+                            <h2 class="text-xl font-black text-slate-800 mb-1.5">5. Лопни правильный шар!</h2>
+                            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4">
+                                Разноцветные воздушные шарики с вариантами ответов! Лопни 7 правильных шаров быстрее соперника, чтобы победить!
+                            </p>
+                        </div>
+                        <button onclick="startGame('balloons')" class="btn-3d w-full py-3 rounded-2xl bg-pink-500 hover:bg-pink-400 border-pink-700 text-white font-black text-base shadow-md">
+                            ЛОПАТЬ ШАРЫ! 🎈 ▶
+                        </button>
+                    </div>
                 </div>
 
             </div>
@@ -278,152 +321,185 @@
         <!-- ==================== ЭКРАН 2: ИГРОВАЯ АРЕНА ==================== -->
         <section id="screen-game" class="hidden space-y-3 sm:space-y-4">
             
-            <!-- ВИЗУАЛЬНАЯ АРЕНА (меняется в зависимости от выбранной игры) -->
-            <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border-4 border-white/80">
+            <!-- ВИЗУАЛЬНАЯ СЦЕНА (МЕНЯЕТСЯ В ЗАВИСИМОСТИ ОТ ВЫБРАННОЙ ИГРЫ) -->
+            <div class="w-full rounded-3xl overflow-hidden shadow-2xl border-4 border-white/25 relative">
                 
-                <!-- 1. АРЕНА: ПЕРЕТЯГИВАНИЕ КАНАТА -->
-                <div id="arena-tug" class="hidden relative h-44 sm:h-52 tug-sky overflow-hidden">
-                    <!-- Облака -->
-                    <div class="absolute top-3 left-8 text-3xl opacity-80">☁️</div>
-                    <div class="absolute top-6 right-14 text-4xl opacity-80">☁️</div>
-                    <div class="absolute top-2 left-1/2 -translate-x-1/2 bg-white/90 px-3 py-1 rounded-full text-xs font-black text-slate-700 shadow">
-                        ПЕРЕТЯНИ КРАСНЫЙ ФЛАЖОК НА СВОЮ СТОРОНУ!
+                <!-- 1. СЦЕНА: ПЕРЕТЯГИВАНИЕ КАНАТА -->
+                <div id="arena-tug" class="hidden tug-sky h-44 sm:h-52 relative flex flex-col justify-between p-4">
+                    <div class="flex justify-between items-center z-10">
+                        <span class="bg-blue-600 text-white font-black text-xs sm:text-sm px-3 py-1 rounded-full shadow" id="tug-label-p1">Игрок 1</span>
+                        <span class="bg-white/90 text-slate-800 font-black text-xs px-3 py-1 rounded-full shadow">Перетяни флаг за линию!</span>
+                        <span class="bg-rose-600 text-white font-black text-xs sm:text-sm px-3 py-1 rounded-full shadow" id="tug-label-p2">Игрок 2</span>
                     </div>
 
-                    <!-- Зоны победы слева и справа -->
-                    <div class="absolute inset-y-0 left-0 w-12 sm:w-16 bg-blue-600/35 border-r-4 border-dashed border-blue-700 flex items-center justify-center">
-                        <span class="text-white font-black text-xs -rotate-90 tracking-widest">ПОБЕДА 1</span>
-                    </div>
-                    <div class="absolute inset-y-0 right-0 w-12 sm:w-16 bg-rose-600/35 border-l-4 border-dashed border-rose-700 flex items-center justify-center">
-                        <span class="text-white font-black text-xs rotate-90 tracking-widest">ПОБЕДА 2</span>
-                    </div>
+                    <!-- Зоны победы и центр -->
+                    <div class="absolute inset-y-0 left-[14%] w-1 border-l-4 border-dashed border-blue-700/60"></div>
+                    <div class="absolute inset-y-0 left-1/2 -translate-x-1/2 w-1 bg-white/80"></div>
+                    <div class="absolute inset-y-0 right-[14%] w-1 border-r-4 border-dashed border-rose-700/60"></div>
 
-                    <!-- Центральная линия -->
-                    <div class="absolute inset-y-0 left-1/2 w-1 bg-white/70 -translate-x-1/2"></div>
-
-                    <!-- Движущаяся группа с канатом -->
+                    <!-- Движущаяся группа с канатом и персонажами -->
                     <div id="tug-rope-group" class="absolute bottom-5 left-1/2 -translate-x-1/2 transition-all duration-300 ease-out flex items-center" style="left: 50%;">
-                        <!-- Команда 1 -->
-                        <div class="flex items-end -mr-2">
-                            <span class="text-4xl sm:text-5xl transform -scale-x-100">🏃‍♂️</span>
-                            <span class="text-3xl sm:text-4xl transform -scale-x-100 -ml-2">🦸‍♂️</span>
+                        <div class="flex flex-col items-center -mr-3 z-10">
+                            <span class="text-4xl sm:text-5xl drop-shadow">🦸‍♂️</span>
                         </div>
-                        <!-- Канат и центральный флажок -->
-                        <div class="w-44 sm:w-64 h-3 bg-amber-700 border-y-2 border-amber-900 rounded-full relative flex items-center justify-center shadow-md">
-                            <div class="w-4 h-7 bg-red-600 border-2 border-white rounded-sm shadow-md -mt-3"></div>
+                        <div class="w-44 sm:w-64 h-3 bg-amber-700 rounded-full border-2 border-amber-900 relative flex items-center justify-center shadow-md">
+                            <div class="w-4 h-7 bg-yellow-400 border-2 border-red-600 rounded-sm shadow animate-bounce"></div>
                         </div>
-                        <!-- Команда 2 -->
-                        <div class="flex items-end -ml-2">
-                            <span class="text-3xl sm:text-4xl -mr-2">🦸‍♀️</span>
-                            <span class="text-4xl sm:text-5xl">🏃‍♀️</span>
+                        <div class="flex flex-col items-center -ml-3 z-10">
+                            <span class="text-4xl sm:text-5xl drop-shadow transform -scale-x-100">🦸‍♀️</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- 2. АРЕНА: ГОНКИ НА РАКЕТАХ -->
-                <div id="arena-race" class="hidden relative h-48 sm:h-56 space-bg p-4 flex flex-col justify-between overflow-hidden">
-                    <div class="flex justify-between items-center text-white/80 text-xs font-black z-10">
-                        <span>СТАРТ 🛸</span>
-                        <span class="bg-indigo-600/80 px-3 py-0.5 rounded-full text-amber-300">КОСМИЧЕСКИЙ СПРИНТ</span>
-                        <span>ФИНИШ 🪐</span>
+                <!-- 2. СЦЕНА: ГОНКИ НА РАКЕТАХ -->
+                <div id="arena-race" class="hidden space-bg h-48 sm:h-56 relative flex flex-col justify-around p-4 text-white">
+                    <div class="absolute inset-y-0 right-8 sm:right-12 w-3 bg-repeat-y opacity-80"
+                         style="background-image: linear-gradient(45deg, #fff 25%, transparent 25%), linear-gradient(-45deg, #fff 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #fff 75%), linear-gradient(-45deg, transparent 75%, #fff 75%); background-size: 12px 12px;">
                     </div>
+                    <div class="absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 text-3xl sm:text-4xl">🪐</div>
 
-                    <!-- Финишная черта -->
-                    <div class="absolute top-0 bottom-0 right-10 sm:right-14 w-3 bg-gradient-to-b from-amber-400 via-white to-amber-400 opacity-80 border-x-2 border-dashed border-slate-900"></div>
-
-                    <!-- Дорожка Игрока 1 (Синяя ракета) -->
-                    <div class="relative w-full h-16 bg-blue-950/60 rounded-2xl border border-blue-500/40 flex items-center px-3">
-                        <div id="race-p1-rocket" class="absolute left-3 transition-all duration-500 ease-out flex items-center" style="left: 2%;">
-                            <div id="race-p1-freeze" class="hidden absolute -top-6 left-1 bg-cyan-400 text-slate-900 text-[10px] font-black px-2 py-0.5 rounded-full">❄️ СБОЙ!</div>
-                            <span class="rocket-flame text-xl sm:text-2xl -mr-2">🔥</span>
-                            <div class="bg-blue-600 text-white px-2.5 py-1 rounded-xl border-2 border-blue-300 shadow-lg flex items-center gap-1">
+                    <!-- Дорожка Игрока 1 -->
+                    <div class="relative h-16 border-b border-white/15 flex items-center">
+                        <div id="race-p1-rocket" class="absolute left-2 transition-all duration-500 ease-out flex items-center" style="left: 2%;">
+                            <div class="rocket-flame w-6 h-3 bg-gradient-to-l from-yellow-300 via-orange-500 to-transparent rounded-l-full -mr-1"></div>
+                            <div class="bg-blue-600 border-2 border-blue-300 px-2.5 py-1 rounded-2xl flex items-center gap-1.5 shadow-lg shadow-blue-500/40">
                                 <span class="text-2xl sm:text-3xl transform rotate-45 inline-block">🚀</span>
-                                <span id="race-p1-label" class="text-[11px] font-black hidden sm:inline">Игрок 1</span>
+                                <span id="race-label-p1" class="font-black text-xs hidden sm:inline">Игрок 1</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Дорожка Игрока 2 (Красная ракета) -->
-                    <div class="relative w-full h-16 bg-rose-950/60 rounded-2xl border border-rose-500/40 flex items-center px-3">
-                        <div id="race-p2-rocket" class="absolute left-3 transition-all duration-500 ease-out flex items-center" style="left: 2%;">
-                            <div id="race-p2-freeze" class="hidden absolute -top-6 left-1 bg-cyan-400 text-slate-900 text-[10px] font-black px-2 py-0.5 rounded-full">❄️ СБОЙ!</div>
-                            <span class="rocket-flame text-xl sm:text-2xl -mr-2">🔥</span>
-                            <div class="bg-rose-600 text-white px-2.5 py-1 rounded-xl border-2 border-rose-300 shadow-lg flex items-center gap-1">
-                                <span class="text-2xl sm:text-3xl transform rotate-45 inline-block">🚀</span>
-                                <span id="race-p2-label" class="text-[11px] font-black hidden sm:inline">Игрок 2</span>
+                    <!-- Дорожка Игрока 2 -->
+                    <div class="relative h-16 flex items-center">
+                        <div id="race-p2-rocket" class="absolute left-2 transition-all duration-500 ease-out flex items-center" style="left: 2%;">
+                            <div class="rocket-flame w-6 h-3 bg-gradient-to-l from-yellow-300 via-pink-500 to-transparent rounded-l-full -mr-1"></div>
+                            <div class="bg-rose-600 border-2 border-rose-300 px-2.5 py-1 rounded-2xl flex items-center gap-1.5 shadow-lg shadow-rose-500/40">
+                                <span class="text-2xl sm:text-3xl transform rotate-45 inline-block">🛸</span>
+                                <span id="race-label-p2" class="font-black text-xs hidden sm:inline">Игрок 2</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 3. АРЕНА: БИТВА ЗА ЗАМОК (ВИКТОРИНА) -->
-                <div id="arena-quiz" class="hidden relative bg-gradient-to-r from-blue-600 via-indigo-700 to-rose-600 p-4 sm:p-5 text-white">
-                    <div class="flex items-center justify-between max-w-3xl mx-auto">
-                        <!-- Счет Игрока 1 -->
-                        <div class="text-center bg-blue-900/60 backdrop-blur px-4 sm:px-6 py-2.5 rounded-2xl border-2 border-blue-300/50 min-w-[110px]">
-                            <div class="text-xs font-bold text-blue-200 truncate" id="quiz-p1-name">Игрок 1</div>
-                            <div class="text-3xl sm:text-4xl font-black text-white" id="quiz-p1-score">0</div>
-                            <div class="text-[10px] text-blue-300 font-bold">очков</div>
-                        </div>
+                <!-- 3. СЦЕНА: БЛИЦ-ТУРНИР -->
+                <div id="arena-quiz" class="hidden bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900 h-36 sm:h-44 p-4 flex items-center justify-around text-white">
+                    <div class="text-center bg-blue-600/40 border-2 border-blue-400 rounded-2xl px-5 py-3 w-32 sm:w-44">
+                        <div class="text-xs font-bold text-blue-200 truncate" id="quiz-label-p1">Игрок 1</div>
+                        <div id="quiz-p1-score" class="text-3xl sm:text-5xl font-black text-white mt-1">0</div>
+                        <div class="text-[11px] text-blue-200">очков</div>
+                    </div>
 
-                        <!-- Центр: Раунд и Замок -->
-                        <div class="text-center px-2">
-                            <div class="text-3xl sm:text-4xl mb-1">🏰</div>
-                            <div class="bg-amber-400 text-slate-900 font-black text-xs sm:text-sm px-3 py-1 rounded-full shadow">
-                                Раунд <span id="quiz-round-num">1</span> / 10
-                            </div>
+                    <div class="text-center">
+                        <div class="bg-amber-400 text-slate-900 font-black text-xs sm:text-sm px-3 py-1 rounded-full mb-1">
+                            ВОПРОС <span id="quiz-round-num">1</span> / 10
                         </div>
+                        <div class="text-2xl sm:text-3xl">⚡</div>
+                    </div>
 
-                        <!-- Счет Игрока 2 -->
-                        <div class="text-center bg-rose-900/60 backdrop-blur px-4 sm:px-6 py-2.5 rounded-2xl border-2 border-rose-300/50 min-w-[110px]">
-                            <div class="text-xs font-bold text-rose-200 truncate" id="quiz-p2-name">Игрок 2</div>
-                            <div class="text-3xl sm:text-4xl font-black text-white" id="quiz-p2-score">0</div>
-                            <div class="text-[10px] text-rose-300 font-bold">очков</div>
-                        </div>
+                    <div class="text-center bg-rose-600/40 border-2 border-rose-400 rounded-2xl px-5 py-3 w-32 sm:w-44">
+                        <div class="text-xs font-bold text-rose-200 truncate" id="quiz-label-p2">Игрок 2</div>
+                        <div id="quiz-p2-score" class="text-3xl sm:text-5xl font-black text-white mt-1">0</div>
+                        <div class="text-[11px] text-rose-200">очков</div>
                     </div>
                 </div>
 
+                <!-- 4. СЦЕНА: ФУТБОЛ ПЕНАЛЬТИ -->
+                <div id="arena-football" class="hidden bg-gradient-to-b from-sky-400 via-sky-300 to-emerald-600 h-44 sm:h-52 relative p-4 flex flex-col justify-between overflow-hidden">
+                    <div class="flex justify-between items-center z-10">
+                        <div class="bg-blue-600 text-white font-black text-xs sm:text-sm px-3 py-1 rounded-full shadow">
+                            <span id="fb-label-p1">Игрок 1</span>: <span id="fb-p1-goals" class="text-amber-300 text-base">0</span> / 5 ⚽
+                        </div>
+                        <span class="bg-white/90 text-slate-800 font-black text-xs px-3 py-1 rounded-full shadow">Забей 5 голов первым!</span>
+                        <div class="bg-rose-600 text-white font-black text-xs sm:text-sm px-3 py-1 rounded-full shadow">
+                            <span id="fb-label-p2">Игрок 2</span>: <span id="fb-p2-goals" class="text-amber-300 text-base">0</span> / 5 ⚽
+                        </div>
+                    </div>
+
+                    <div class="absolute top-11 left-1/2 -translate-x-1/2 w-48 sm:w-64 h-20 border-t-8 border-x-8 border-white rounded-t-lg bg-white/15 flex items-end justify-center pb-1">
+                        <span id="fb-keeper" class="text-3xl sm:text-4xl transition-all duration-300">🧤</span>
+                    </div>
+
+                    <div id="fb-ball" class="absolute bottom-3 left-1/2 -translate-x-1/2 text-3xl sm:text-4xl transition-all duration-500 ease-out drop-shadow-lg">
+                        ⚽
+                    </div>
+
+                    <div id="fb-goal-banner" class="hidden absolute inset-0 bg-emerald-950/60 flex items-center justify-center z-20">
+                        <span class="text-3xl sm:text-5xl font-black text-amber-300 tracking-wider animate-pop drop-shadow">ГОООЛ! ⚽🔥</span>
+                    </div>
+                </div>
+
+                <!-- 5. СЦЕНА: ЛОПНИ ШАРИК -->
+                <div id="arena-balloons" class="hidden bg-gradient-to-b from-cyan-400 via-sky-300 to-indigo-400 h-40 sm:h-48 relative p-4 flex flex-col justify-between">
+                    <div class="flex justify-between items-center z-10">
+                        <span class="bg-blue-600 text-white font-black text-xs sm:text-sm px-3 py-1 rounded-full shadow">
+                            <span id="bal-label-p1">Игрок 1</span>: <span id="bal-p1-score">0</span> / 7 🎈
+                        </span>
+                        <span class="bg-white/90 text-slate-800 font-black text-xs px-3 py-1 rounded-full shadow">Лопни 7 правильных шаров!</span>
+                        <span class="bg-rose-600 text-white font-black text-xs sm:text-sm px-3 py-1 rounded-full shadow">
+                            <span id="bal-label-p2">Игрок 2</span>: <span id="bal-p2-score">0</span> / 7 🎈
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-6 items-center my-auto px-2 sm:px-8">
+                        <div class="bg-white/50 rounded-full h-6 p-1 shadow-inner">
+                            <div id="bal-p1-bar" class="bg-blue-600 h-full rounded-full transition-all duration-300 flex items-center justify-end pr-1.5 text-xs text-white font-black" style="width: 0%;">🎈</div>
+                        </div>
+                        <div class="bg-white/50 rounded-full h-6 p-1 shadow-inner">
+                            <div id="bal-p2-bar" class="bg-rose-600 h-full rounded-full transition-all duration-300 flex items-center justify-end pr-1.5 text-xs text-white font-black" style="width: 0%;">🎈</div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- КАРТОЧКА ТЕКУЩЕГО ВОПРОСА -->
-            <div id="question-box" class="bg-white rounded-3xl p-4 sm:p-6 shadow-xl border-4 border-amber-300 text-center relative">
-                <div class="flex items-center justify-between mb-2">
-                    <span id="q-category" class="bg-indigo-100 text-indigo-800 text-xs font-black px-3 py-1 rounded-full uppercase">Орфография</span>
-                    <span id="q-grade-badge" class="bg-amber-100 text-amber-800 text-xs font-black px-3 py-1 rounded-full">5 класс</span>
-                </div>
-                <h2 id="q-text" class="text-lg sm:text-2xl md:text-3xl font-black text-slate-800 leading-snug my-1">
-                    Загрузка вопроса...
-                </h2>
-                <p id="q-feedback" class="h-6 text-sm font-extrabold text-emerald-600 mt-1"></p>
-            </div>
-
-            <!-- ПАНЕЛЬ ОТВЕТОВ ДЛЯ ДВУХ ИГРОКОВ (РАЗДЕЛЬНЫЙ ЭКРАН) -->
+            <!-- ПАНЕЛЬ ОТВЕТОВ ДЛЯ ДВУХ ИГРОКОВ (КАЖДОМУ СВОЙ ВОПРОС) -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-5">
                 
                 <!-- ПУЛЬТ ИГРОКА 1 (СИНИЙ) -->
-                <div id="panel-p1" class="bg-blue-600/95 backdrop-blur rounded-3xl p-3.5 sm:p-4 shadow-xl border-4 border-blue-300">
-                    <div class="flex items-center justify-between text-white mb-2.5 px-1">
-                        <span class="font-black text-sm sm:text-base flex items-center gap-1.5">
-                            <span>🦸‍♂️</span> <span id="ctrl-p1-name">Игрок 1</span>
-                        </span>
-                        <span id="p1-status-badge" class="text-xs bg-blue-800 px-2.5 py-0.5 rounded-full font-bold">Готов!</span>
+                <div id="panel-p1" class="bg-blue-600/95 backdrop-blur rounded-3xl p-3.5 sm:p-4 shadow-xl border-4 border-blue-300 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between text-white mb-2 px-1">
+                            <span class="font-black text-sm sm:text-base flex items-center gap-1.5">
+                                <span>🦸‍♂️</span> <span id="ctrl-p1-name">Игрок 1</span>
+                            </span>
+                            <div class="flex items-center gap-1.5">
+                                <span id="p1-q-cat" class="text-[10px] bg-blue-900/80 text-blue-200 px-2 py-0.5 rounded-full font-bold uppercase">Тема</span>
+                                <span id="p1-status-badge" class="text-xs bg-blue-800 px-2.5 py-0.5 rounded-full font-bold">Ваш ход!</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-2xl p-3 sm:p-3.5 mb-2.5 shadow-inner border-2 border-blue-200 text-center">
+                            <h3 id="p1-q-text" class="text-base sm:text-lg font-black text-slate-800 leading-snug">
+                                Загрузка вопроса...
+                            </h3>
+                            <p id="p1-feedback" class="min-h-[18px] text-xs font-extrabold mt-1"></p>
+                        </div>
                     </div>
-                    <div id="p1-options" class="grid grid-cols-2 gap-2.5">
-                        <!-- Кнопки генерируются через JS -->
-                    </div>
+
+                    <div id="p1-options" class="grid grid-cols-2 gap-2"></div>
                 </div>
 
                 <!-- ПУЛЬТ ИГРОКА 2 (КРАСНЫЙ) -->
-                <div id="panel-p2" class="bg-rose-600/95 backdrop-blur rounded-3xl p-3.5 sm:p-4 shadow-xl border-4 border-rose-300">
-                    <div class="flex items-center justify-between text-white mb-2.5 px-1">
-                        <span class="font-black text-sm sm:text-base flex items-center gap-1.5">
-                            <span>🦸‍♀️</span> <span id="ctrl-p2-name">Игрок 2</span>
-                        </span>
-                        <span id="p2-status-badge" class="text-xs bg-rose-800 px-2.5 py-0.5 rounded-full font-bold">Готов!</span>
+                <div id="panel-p2" class="bg-rose-600/95 backdrop-blur rounded-3xl p-3.5 sm:p-4 shadow-xl border-4 border-rose-300 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between text-white mb-2 px-1">
+                            <span class="font-black text-sm sm:text-base flex items-center gap-1.5">
+                                <span>🦸‍♀️</span> <span id="ctrl-p2-name">Игрок 2</span>
+                            </span>
+                            <div class="flex items-center gap-1.5">
+                                <span id="p2-q-cat" class="text-[10px] bg-rose-900/80 text-rose-200 px-2 py-0.5 rounded-full font-bold uppercase">Тема</span>
+                                <span id="p2-status-badge" class="text-xs bg-rose-800 px-2.5 py-0.5 rounded-full font-bold">Ваш ход!</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-2xl p-3 sm:p-3.5 mb-2.5 shadow-inner border-2 border-rose-200 text-center">
+                            <h3 id="p2-q-text" class="text-base sm:text-lg font-black text-slate-800 leading-snug">
+                                Загрузка вопроса...
+                            </h3>
+                            <p id="p2-feedback" class="min-h-[18px] text-xs font-extrabold mt-1"></p>
+                        </div>
                     </div>
-                    <div id="p2-options" class="grid grid-cols-2 gap-2.5">
-                        <!-- Кнопки генерируются через JS -->
-                    </div>
+
+                    <div id="p2-options" class="grid grid-cols-2 gap-2"></div>
                 </div>
 
             </div>
@@ -442,7 +518,6 @@
                     Отличное знание русского языка!
                 </p>
 
-                <!-- Мини-табло -->
                 <div class="bg-slate-100 rounded-2xl p-4 mb-6 flex items-center justify-around border-2 border-slate-200">
                     <div>
                         <div class="text-xs font-bold text-blue-600" id="vic-p1-name">Игрок 1</div>
@@ -476,12 +551,12 @@
                 <button onclick="toggleHelpModal()" class="w-8 h-8 rounded-full bg-slate-200 hover:bg-slate-300 font-black text-slate-700">✕</button>
             </div>
             <div class="space-y-3 text-sm text-slate-700 font-semibold">
-                <p><strong>1. Один экран на двоих:</strong> Сядьте рядом перед планшетом, ноутбуком или телефоном. Слева кнопки <span class="text-blue-600 font-black">Игрока 1</span>, справа — <span class="text-rose-600 font-black">Игрока 2</span>.</p>
+                <p><strong>1. У каждого свой вопрос:</strong> Слева панель <span class="text-blue-600 font-black">Игрока 1</span>, справа — <span class="text-rose-600 font-black">Игрока 2</span>. Ошибка одного игрока не мешает второму!</p>
                 <p><strong>2. Управление на клавиатуре (для ПК):</strong><br>
                    • Игрок 1: клавиши <code class="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded font-bold">Q W E R</code> или <code class="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded font-bold">1 2 3 4</code><br>
                    • Игрок 2: клавиши <code class="bg-rose-100 text-rose-800 px-1.5 py-0.5 rounded font-bold">U I O P</code> или <code class="bg-rose-100 text-rose-800 px-1.5 py-0.5 rounded font-bold">7 8 9 0</code>
                 </p>
-                <p><strong>3. Осторожно с ошибками!</strong> Если нажать неправильный ответ, ваши кнопки заблокируются на 1.2 секунды («Ой! Подумай ещё»), а соперник сможет вырваться вперёд!</p>
+                <p><strong>3. Подсказка при ошибке:</strong> Если ответить неправильно, правильный вариант подсветится зелёным, а затем появится следующий вопрос.</p>
             </div>
             <button onclick="toggleHelpModal()" class="btn-3d w-full mt-5 py-3 rounded-2xl bg-indigo-600 border-indigo-800 text-white font-black">
                 ПОНЯТНО!
@@ -490,9 +565,38 @@
     </div>
 
     <script>
+        // ==================== ПРОВЕРКА ПАРОЛЯ ПРИ ВХОДЕ ====================
+        function checkPassword(e) {
+            e.preventDefault();
+            const input = document.getElementById('password-input');
+            const err = document.getElementById('password-error');
+            const val = input.value.trim().toLowerCase();
+
+            if (val === 'mirjalol') {
+                initAudio();
+                sfxCorrect();
+                const gate = document.getElementById('login-gate');
+                gate.style.opacity = '0';
+                gate.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => gate.remove(), 300);
+            } else {
+                sfxWrong();
+                err.textContent = "❌ Неверный код! Попробуйте ещё раз.";
+                input.classList.add('animate-shake', 'border-rose-500');
+                setTimeout(() => input.classList.remove('animate-shake', 'border-rose-500'), 450);
+                input.value = '';
+                input.focus();
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const pwdInput = document.getElementById('password-input');
+            if (pwdInput) pwdInput.focus();
+        });
+
         // ==================== БАЗА ЛЁГКИХ ВОПРОСОВ ПО РУССКОМУ ЯЗЫКУ (4, 5, 6 КЛАССЫ) ====================
         const QUESTIONS_BANK = [
-            // --- 4 КЛАСС (ОЧЕНЬ ЛЁГКИЕ: 32 вопроса) ---
+            // --- 4 КЛАСС (32 вопроса) ---
             { grade: 4, cat: "Орфография", q: "Какая буква пропущена: Ж...раф?", opts: ["и", "ы", "е", "а"], ans: 0 },
             { grade: 4, cat: "Орфография", q: "Какая буква пропущена: Ч...шка?", opts: ["а", "я", "о", "у"], ans: 0 },
             { grade: 4, cat: "Орфография", q: "Какая буква пропущена: Щ...ка?", opts: ["у", "ю", "о", "а"], ans: 0 },
@@ -526,7 +630,7 @@
             { grade: 4, cat: "Словарь и загадки", q: "Сколько всего букв в русском алфавите?", opts: ["33", "30", "26", "40"], ans: 0 },
             { grade: 4, cat: "Словарь и загадки", q: "Как называют детёныша собаки?", opts: ["Щенок", "Котёнок", "Телёнок", "Жеребёнок"], ans: 0 },
 
-            // --- 5 КЛАСС (ЛЁГКИЕ: 32 вопроса) ---
+            // --- 5 КЛАСС (32 вопроса) ---
             { grade: 5, cat: "Части речи", q: "Бегать — что это за часть речи?", opts: ["Глагол", "Существительное", "Прилагательное", "Местоимение"], ans: 0 },
             { grade: 5, cat: "Части речи", q: "Красивый — что это за часть речи?", opts: ["Прилагательное", "Глагол", "Существительное", "Предлог"], ans: 0 },
             { grade: 5, cat: "Части речи", q: "Школа — что это за часть речи?", opts: ["Существительное", "Глагол", "Прилагательное", "Наречие"], ans: 0 },
@@ -560,7 +664,7 @@
             { grade: 5, cat: "Орфография", q: "Какая буква пропущена: ц...плёнок?", opts: ["ы", "и", "е", "а"], ans: 0 },
             { grade: 5, cat: "Орфография", q: "Какая буква пропущена: ц...рк?", opts: ["и", "ы", "е", "у"], ans: 0 },
 
-            // --- 6 КЛАСС (ЛЁГКИЕ И ПОНЯТНЫЕ: 30 вопросов) ---
+            // --- 6 КЛАСС (30 вопросов) ---
             { grade: 6, cat: "Фразеологизмы", q: "«Кот наплакал» — это значит...", opts: ["Очень мало", "Очень много", "Громко кричать", "Любить кошек"], ans: 0 },
             { grade: 6, cat: "Фразеологизмы", q: "«Бить баклуши» — это значит...", opts: ["Бездельничать", "Много работать", "Играть в мяч", "Рубить дрова"], ans: 0 },
             { grade: 6, cat: "Фразеологизмы", q: "«Зарубить на носу» — это значит...", opts: ["Хорошо запомнить", "Поцарапать нос", "Забыть всё", "Обидеться"], ans: 0 },
@@ -624,9 +728,9 @@
         }
 
         function sfxCorrect() {
-            playTone(523.25, 'sine', 0.12, 0, 0.2);     // C5
-            playTone(659.25, 'sine', 0.12, 0.08, 0.2);  // E5
-            playTone(783.99, 'triangle', 0.22, 0.16, 0.22); // G5
+            playTone(523.25, 'sine', 0.12, 0, 0.2);
+            playTone(659.25, 'sine', 0.12, 0.08, 0.2);
+            playTone(783.99, 'triangle', 0.22, 0.16, 0.22);
         }
 
         function sfxWrong() {
@@ -653,66 +757,62 @@
             p2Name: "Игрок 2",
             p1Wins: 0,
             p2Wins: 0,
-            selectedGrade: 5, // 4, 5, 6 или 0 (Микс)
-            currentMode: null, // 'tug', 'race', 'quiz'
+            selectedGrade: 5,
+            currentMode: null,
             questionPool: [],
-            currentQuestion: null,
-            roundLocked: false,
+            gameEnded: false,
+            p1Question: null,
+            p2Question: null,
             p1Locked: false,
             p2Locked: false,
 
-            // Переменные для режимов
-            tugPosition: 50, // 50 = центр, <= 12 победа Игрока 1, >= 88 победа Игрока 2
-            raceP1: 2,       // % прогресса (до 85%)
+            tugPosition: 50,
+            raceP1: 2,
             raceP2: 2,
-            quizRound: 1,
+            quizP1Turn: 1,
+            quizP2Turn: 1,
             quizMaxRounds: 10,
             quizP1Score: 0,
-            quizP2Score: 0
+            quizP2Score: 0,
+            fbP1Goals: 0,
+            fbP2Goals: 0,
+            balP1Score: 0,
+            balP2Score: 0
         };
 
-        // ==================== НАСТРОЙКИ И МЕНЮ ====================
+        // ==================== НАВИГАЦИЯ И ИНТЕРФЕЙС ====================
         function updateNames() {
-            const n1 = document.getElementById('input-p1-name').value.trim() || "Игрок 1";
-            const n2 = document.getElementById('input-p2-name').value.trim() || "Игрок 2";
-            state.p1Name = n1;
-            state.p2Name = n2;
+            const p1Val = document.getElementById('input-p1-name').value.trim();
+            const p2Val = document.getElementById('input-p2-name').value.trim();
+            state.p1Name = p1Val || "Игрок 1";
+            state.p2Name = p2Val || "Игрок 2";
 
-            document.getElementById('header-p1-name').textContent = n1;
-            document.getElementById('header-p2-name').textContent = n2;
-            document.getElementById('ctrl-p1-name').textContent = n1;
-            document.getElementById('ctrl-p2-name').textContent = n2;
-            document.getElementById('race-p1-label').textContent = n1;
-            document.getElementById('race-p2-label').textContent = n2;
-            document.getElementById('quiz-p1-name').textContent = n1;
-            document.getElementById('quiz-p2-name').textContent = n2;
+            document.getElementById('header-p1-name').textContent = state.p1Name;
+            document.getElementById('header-p2-name').textContent = state.p2Name;
+            document.getElementById('ctrl-p1-name').textContent = state.p1Name;
+            document.getElementById('ctrl-p2-name').textContent = state.p2Name;
+            document.getElementById('tug-label-p1').textContent = state.p1Name;
+            document.getElementById('tug-label-p2').textContent = state.p2Name;
+            document.getElementById('race-label-p1').textContent = state.p1Name;
+            document.getElementById('race-label-p2').textContent = state.p2Name;
+            document.getElementById('quiz-label-p1').textContent = state.p1Name;
+            document.getElementById('quiz-label-p2').textContent = state.p2Name;
+            document.getElementById('fb-label-p1').textContent = state.p1Name;
+            document.getElementById('fb-label-p2').textContent = state.p2Name;
+            document.getElementById('bal-label-p1').textContent = state.p1Name;
+            document.getElementById('bal-label-p2').textContent = state.p2Name;
         }
 
         function selectGrade(grade) {
             state.selectedGrade = grade;
-            const btns = document.querySelectorAll('.grade-btn');
-            btns.forEach(btn => {
-                const g = parseInt(btn.getAttribute('data-grade'));
+            document.querySelectorAll('.grade-btn').forEach(btn => {
+                const g = parseInt(btn.getAttribute('data-grade'), 10);
                 if (g === grade) {
-                    btn.className = "grade-btn py-2 rounded-xl font-black text-xs sm:text-sm bg-amber-500 border-2 border-amber-600 text-white shadow-md transition";
+                    btn.className = "grade-btn py-2 rounded-xl font-black text-xs sm:text-sm bg-amber-500 border-2 border-amber-600 text-white shadow-sm transition";
                 } else {
                     btn.className = "grade-btn py-2 rounded-xl font-black text-xs sm:text-sm bg-white border-2 border-amber-300 text-slate-700 hover:bg-amber-100 transition";
                 }
             });
-
-            const descMap = {
-                4: "4 класс: Жи-ши, род слов, антонимы и простые загадки",
-                5: "5 класс: Простые части речи, синонимы, мягкий знак",
-                6: "6 класс: Понятные фразеологизмы, ударения и корни слов",
-                0: "Все классы (4–6): Лёгкие и интересные вопросы обо всём!"
-            };
-            document.getElementById('grade-desc').textContent = descMap[grade];
-            playTone(600, 'sine', 0.08, 0, 0.1);
-        }
-
-        function toggleHelpModal() {
-            const modal = document.getElementById('modal-help');
-            modal.classList.toggle('hidden');
         }
 
         function showScreen(screenId) {
@@ -731,8 +831,13 @@
 
         function returnToMenu() {
             state.currentMode = null;
-            state.roundLocked = true;
+            state.gameEnded = true;
             showScreen('screen-menu');
+        }
+
+        function toggleHelpModal() {
+            const modal = document.getElementById('modal-help');
+            modal.classList.toggle('hidden');
         }
 
         // ==================== ПОДГОТОВКА ВОПРОСОВ ====================
@@ -741,7 +846,6 @@
                 ? [...QUESTIONS_BANK]
                 : QUESTIONS_BANK.filter(item => item.grade === state.selectedGrade);
 
-            // Перемешивание Фишера-Йейтса
             for (let i = filtered.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [filtered[i], filtered[j]] = [filtered[j], filtered[i]];
@@ -754,7 +858,6 @@
                 refillQuestionPool();
             }
             const raw = state.questionPool.pop();
-            // Перемешиваем варианты ответов, сохраняя индекс правильного
             const optionsWithFlag = raw.opts.map((text, idx) => ({
                 text,
                 isCorrect: idx === raw.ans
@@ -776,10 +879,10 @@
             initAudio();
             updateNames();
             state.currentMode = mode;
+            state.gameEnded = false;
             refillQuestionPool();
 
-            // Скрыть все арены
-            ['arena-tug', 'arena-race', 'arena-quiz'].forEach(id => {
+            ['arena-tug', 'arena-race', 'arena-quiz', 'arena-football', 'arena-balloons'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
             });
 
@@ -791,19 +894,31 @@
                 state.raceP1 = 2;
                 state.raceP2 = 2;
                 document.getElementById('arena-race').classList.remove('hidden');
-                document.getElementById('race-p1-freeze').classList.add('hidden');
-                document.getElementById('race-p2-freeze').classList.add('hidden');
                 updateRaceVisuals();
             } else if (mode === 'quiz') {
-                state.quizRound = 1;
+                state.quizP1Turn = 1;
+                state.quizP2Turn = 1;
                 state.quizP1Score = 0;
                 state.quizP2Score = 0;
                 document.getElementById('arena-quiz').classList.remove('hidden');
                 updateQuizVisuals();
+            } else if (mode === 'football') {
+                state.fbP1Goals = 0;
+                state.fbP2Goals = 0;
+                document.getElementById('arena-football').classList.remove('hidden');
+                document.getElementById('fb-goal-banner').classList.add('hidden');
+                resetFootballPitch();
+                updateFootballVisuals();
+            } else if (mode === 'balloons') {
+                state.balP1Score = 0;
+                state.balP2Score = 0;
+                document.getElementById('arena-balloons').classList.remove('hidden');
+                updateBalloonVisuals();
             }
 
             showScreen('screen-game');
-            loadRound();
+            loadPlayerQuestion(1);
+            loadPlayerQuestion(2);
         }
 
         function restartCurrentGame() {
@@ -812,167 +927,168 @@
             }
         }
 
-        // ==================== ОТРИСОВКА РАУНДА И КНОПОК ====================
-        function loadRound() {
-            state.roundLocked = false;
-            state.p1Locked = false;
-            state.p2Locked = false;
+        // ==================== ОТРИСОВКА ИНДИВИДУАЛЬНОГО ВОПРОСА ИГРОКА ====================
+        function loadPlayerQuestion(playerNum) {
+            if (state.gameEnded) return;
+
+            if (playerNum === 1) state.p1Locked = false;
+            else state.p2Locked = false;
 
             const qObj = getNextQuestion();
-            state.currentQuestion = qObj;
+            if (playerNum === 1) state.p1Question = qObj;
+            else state.p2Question = qObj;
 
-            document.getElementById('q-category').textContent = qObj.cat;
-            document.getElementById('q-grade-badge').textContent = `${qObj.grade} класс`;
-            document.getElementById('q-text').textContent = qObj.q;
-            document.getElementById('q-feedback').textContent = "";
+            document.getElementById(`p${playerNum}-q-cat`).textContent = `${qObj.cat} • ${qObj.grade} кл`;
+            document.getElementById(`p${playerNum}-q-text`).textContent = qObj.q;
+            document.getElementById(`p${playerNum}-feedback`).textContent = "";
 
-            document.getElementById('p1-status-badge').textContent = "Ваш ход!";
-            document.getElementById('p1-status-badge').className = "text-xs bg-blue-800 px-2.5 py-0.5 rounded-full font-bold";
-            document.getElementById('p2-status-badge').textContent = "Ваш ход!";
-            document.getElementById('p2-status-badge').className = "text-xs bg-rose-800 px-2.5 py-0.5 rounded-full font-bold";
+            const badge = document.getElementById(`p${playerNum}-status-badge`);
+            badge.textContent = "Ваш ход!";
+            badge.className = playerNum === 1
+                ? "text-xs bg-blue-800 px-2.5 py-0.5 rounded-full font-bold"
+                : "text-xs bg-rose-800 px-2.5 py-0.5 rounded-full font-bold";
 
-            renderPlayerButtons(1, qObj.options);
-            renderPlayerButtons(2, qObj.options);
+            renderPlayerButtons(playerNum, qObj.options);
         }
 
         function renderPlayerButtons(playerNum, options) {
             const container = document.getElementById(`p${playerNum}-options`);
             container.innerHTML = "";
             const keys = playerNum === 1 ? ['Q', 'W', 'E', 'R'] : ['U', 'I', 'O', 'P'];
+            const balloonColors = [
+                'bg-pink-100 hover:bg-pink-200 border-pink-400 text-pink-950',
+                'bg-sky-100 hover:bg-sky-200 border-sky-400 text-sky-950',
+                'bg-amber-100 hover:bg-amber-200 border-amber-400 text-amber-950',
+                'bg-emerald-100 hover:bg-emerald-200 border-emerald-400 text-emerald-950'
+            ];
 
             options.forEach((opt, idx) => {
                 const btn = document.createElement('button');
                 btn.id = `btn-p${playerNum}-${idx}`;
-                btn.className = "btn-3d bg-white hover:bg-amber-50 border-slate-300 text-slate-800 rounded-2xl p-3 sm:p-3.5 font-extrabold text-sm sm:text-base shadow-md flex items-center justify-between gap-2 text-left transition";
-                btn.innerHTML = `
-                    <span class="leading-tight">${opt.text}</span>
-                    <span class="hidden lg:inline-block text-[10px] font-black px-1.5 py-0.5 rounded bg-slate-200 text-slate-600">${keys[idx]}</span>
-                `;
+                if (state.currentMode === 'balloons') {
+                    btn.className = `btn-3d ${balloonColors[idx]} rounded-full p-3 sm:p-3.5 font-black text-sm sm:text-base shadow-md flex items-center justify-between gap-2 text-left transition`;
+                    btn.innerHTML = `
+                        <span class="leading-tight flex items-center gap-1.5"><span>🎈</span> ${opt.text}</span>
+                        <span class="hidden lg:inline-block text-[10px] font-black px-1.5 py-0.5 rounded-full bg-white/70 text-slate-700">${keys[idx]}</span>
+                    `;
+                } else {
+                    btn.className = "btn-3d bg-white hover:bg-amber-50 border-slate-300 text-slate-800 rounded-2xl p-3 sm:p-3.5 font-extrabold text-sm sm:text-base shadow-md flex items-center justify-between gap-2 text-left transition";
+                    btn.innerHTML = `
+                        <span class="leading-tight">${opt.text}</span>
+                        <span class="hidden lg:inline-block text-[10px] font-black px-1.5 py-0.5 rounded bg-slate-200 text-slate-600">${keys[idx]}</span>
+                    `;
+                }
                 btn.onclick = () => handlePlayerAnswer(playerNum, idx);
                 container.appendChild(btn);
             });
         }
 
-        // ==================== ОБРАБОТКА ОТВЕТА ИГРОКА ====================
+        // ==================== ОБРАБОТКА ОТВЕТА ИГРОКА (НЕЗАВИСИМО ДРУГ ОТ ДРУГА) ====================
         function handlePlayerAnswer(playerNum, optionIdx) {
-            if (!state.currentMode || state.roundLocked) return;
+            if (!state.currentMode || state.gameEnded) return;
             if (playerNum === 1 && state.p1Locked) return;
             if (playerNum === 2 && state.p2Locked) return;
 
-            const chosen = state.currentQuestion.options[optionIdx];
+            const qObj = playerNum === 1 ? state.p1Question : state.p2Question;
+            if (!qObj) return;
+
+            if (playerNum === 1) state.p1Locked = true;
+            else state.p2Locked = true;
+
+            const chosen = qObj.options[optionIdx];
             const btn = document.getElementById(`btn-p${playerNum}-${optionIdx}`);
+            const feedbackEl = document.getElementById(`p${playerNum}-feedback`);
+            const badge = document.getElementById(`p${playerNum}-status-badge`);
 
             if (chosen.isCorrect) {
-                // ПРАВИЛЬНЫЙ ОТВЕТ!
-                state.roundLocked = true;
                 sfxCorrect();
 
-                // Подсветка правильного ответа у обоих игроков
-                state.currentQuestion.options.forEach((o, i) => {
+                qObj.options.forEach((o, i) => {
                     if (o.isCorrect) {
-                        const b1 = document.getElementById(`btn-p1-${i}`);
-                        const b2 = document.getElementById(`btn-p2-${i}`);
-                        if (b1) b1.className = "btn-3d bg-emerald-500 border-emerald-700 text-white rounded-2xl p-3 sm:p-3.5 font-black text-sm sm:text-base shadow-md flex items-center justify-between";
-                        if (b2) b2.className = "btn-3d bg-emerald-500 border-emerald-700 text-white rounded-2xl p-3 sm:p-3.5 font-black text-sm sm:text-base shadow-md flex items-center justify-between";
+                        const b = document.getElementById(`btn-p${playerNum}-${i}`);
+                        if (b) b.className = "btn-3d bg-emerald-500 border-emerald-700 text-white rounded-2xl p-3 sm:p-3.5 font-black text-sm sm:text-base shadow-md flex items-center justify-between";
                     }
                 });
 
-                const winnerName = playerNum === 1 ? state.p1Name : state.p2Name;
-                const feedbackEl = document.getElementById('q-feedback');
-                feedbackEl.textContent = `✅ Верно! ${winnerName} отвечает быстрее!`;
-                feedbackEl.className = "h-6 text-sm font-black text-emerald-600 mt-1";
+                badge.textContent = "✅ Верно!";
+                badge.className = "text-xs bg-emerald-500 text-white px-2.5 py-0.5 rounded-full font-black";
+                feedbackEl.textContent = "✅ Отлично! Правильный ответ!";
+                feedbackEl.className = "min-h-[18px] text-xs font-black text-emerald-600 mt-1";
 
-                applyModeReward(playerNum);
+                applyModeReward(playerNum, true);
 
             } else {
-                // НЕПРАВИЛЬНЫЙ ОТВЕТ (Штрафная блокировка на 1.5 сек)
                 sfxWrong();
+
                 if (btn) {
                     btn.className = "btn-3d bg-red-600 border-red-800 text-white rounded-2xl p-3 sm:p-3.5 font-extrabold text-sm sm:text-base shadow-md flex items-center justify-between animate-shake";
                 }
+
+                let correctAnswerText = "";
+                qObj.options.forEach((o, i) => {
+                    if (o.isCorrect) {
+                        correctAnswerText = o.text;
+                        const b = document.getElementById(`btn-p${playerNum}-${i}`);
+                        if (b) b.className = "btn-3d bg-emerald-500 border-emerald-700 text-white rounded-2xl p-3 sm:p-3.5 font-black text-sm sm:text-base shadow-md flex items-center justify-between";
+                    }
+                });
+
+                badge.textContent = "❌ Ошибка";
+                badge.className = "text-xs bg-amber-400 text-slate-900 px-2.5 py-0.5 rounded-full font-black";
+                feedbackEl.textContent = `❌ Верно: «${correctAnswerText}»`;
+                feedbackEl.className = "min-h-[18px] text-xs font-black text-rose-600 mt-1";
 
                 const panel = document.getElementById(`panel-p${playerNum}`);
                 panel.classList.add('animate-shake');
                 setTimeout(() => panel.classList.remove('animate-shake'), 400);
 
-                lockPlayerTemporarily(playerNum);
+                applyModeReward(playerNum, false);
             }
         }
 
-        function lockPlayerTemporarily(playerNum) {
-            if (playerNum === 1) state.p1Locked = true;
-            else state.p2Locked = true;
-
-            const badge = document.getElementById(`p${playerNum}-status-badge`);
-            badge.textContent = "😅 Ой! Подумай ещё...";
-            badge.className = "text-xs bg-amber-400 text-slate-900 px-2.5 py-0.5 rounded-full font-black";
-
-            if (state.currentMode === 'race') {
-                document.getElementById(`race-p${playerNum}-freeze`).classList.remove('hidden');
-            }
-
-            // Отключаем кнопки игрока
-            for (let i = 0; i < 4; i++) {
-                const b = document.getElementById(`btn-p${playerNum}-${i}`);
-                if (b) b.disabled = true;
-            }
-
-            setTimeout(() => {
-                if (state.roundLocked) return;
-                if (playerNum === 1) state.p1Locked = false;
-                else state.p2Locked = false;
-
-                badge.textContent = "Ваш ход!";
-                badge.className = playerNum === 1
-                    ? "text-xs bg-blue-800 px-2.5 py-0.5 rounded-full font-bold"
-                    : "text-xs bg-rose-800 px-2.5 py-0.5 rounded-full font-bold";
-
-                if (state.currentMode === 'race') {
-                    document.getElementById(`race-p${playerNum}-freeze`).classList.add('hidden');
-                }
-
-                for (let i = 0; i < 4; i++) {
-                    const b = document.getElementById(`btn-p${playerNum}-${i}`);
-                    if (b) b.disabled = false;
-                }
-            }, 1200);
-        }
-
-        // ==================== ЛОГИКА ОЧКОВ И ПОБЕДЫ ДЛЯ КАЖДОГО РЕЖИМА ====================
-        function applyModeReward(playerNum) {
+        // ==================== ЛОГИКА ОЧКОВ И ПОБЕДЫ ДЛЯ КАЖДОГО ИГРОКА ОТДЕЛЬНО ====================
+        function applyModeReward(playerNum, isCorrect) {
             if (state.currentMode === 'tug') {
-                // Игрок 1 тянет влево (-9%), Игрок 2 тянет вправо (+9%)
-                state.tugPosition += (playerNum === 1 ? -9.5 : 9.5);
-                updateTugVisuals();
+                if (isCorrect) {
+                    state.tugPosition += (playerNum === 1 ? -9.5 : 9.5);
+                    updateTugVisuals();
 
-                if (state.tugPosition <= 12) {
-                    setTimeout(() => declareWinner(1, "Мощная победа в перетягивании каната!"), 800);
-                } else if (state.tugPosition >= 88) {
-                    setTimeout(() => declareWinner(2, "Мощная победа в перетягивании каната!"), 800);
-                } else {
-                    setTimeout(loadRound, 950);
+                    if (state.tugPosition <= 12) {
+                        setTimeout(() => declareWinner(1, "Мощная победа в перетягивании каната!"), 600);
+                        return;
+                    } else if (state.tugPosition >= 88) {
+                        setTimeout(() => declareWinner(2, "Мощная победа в перетягивании каната!"), 600);
+                        return;
+                    }
                 }
+                setTimeout(() => loadPlayerQuestion(playerNum), isCorrect ? 650 : 1400);
 
             } else if (state.currentMode === 'race') {
-                // Ракета летит вперёд (+14%)
-                if (playerNum === 1) state.raceP1 = Math.min(84, state.raceP1 + 14);
-                else state.raceP2 = Math.min(84, state.raceP2 + 14);
-                updateRaceVisuals();
+                if (isCorrect) {
+                    if (playerNum === 1) state.raceP1 = Math.min(84, state.raceP1 + 14);
+                    else state.raceP2 = Math.min(84, state.raceP2 + 14);
+                    updateRaceVisuals();
 
-                if (state.raceP1 >= 84) {
-                    setTimeout(() => declareWinner(1, "Ракета прилетела к финишу первой!"), 800);
-                } else if (state.raceP2 >= 84) {
-                    setTimeout(() => declareWinner(2, "Ракета прилетела к финишу первой!"), 800);
-                } else {
-                    setTimeout(loadRound, 950);
+                    if (state.raceP1 >= 84) {
+                        setTimeout(() => declareWinner(1, "Ракета прилетела к финишу первой!"), 600);
+                        return;
+                    } else if (state.raceP2 >= 84) {
+                        setTimeout(() => declareWinner(2, "Ракета прилетела к финишу первой!"), 600);
+                        return;
+                    }
                 }
+                setTimeout(() => loadPlayerQuestion(playerNum), isCorrect ? 650 : 1400);
 
             } else if (state.currentMode === 'quiz') {
-                if (playerNum === 1) state.quizP1Score += 10;
-                else state.quizP2Score += 10;
+                if (isCorrect) {
+                    if (playerNum === 1) state.quizP1Score += 10;
+                    else state.quizP2Score += 10;
+                }
+                if (playerNum === 1) state.quizP1Turn++;
+                else state.quizP2Turn++;
                 updateQuizVisuals();
 
-                if (state.quizRound >= state.quizMaxRounds) {
+                if (state.quizP1Turn > state.quizMaxRounds && state.quizP2Turn > state.quizMaxRounds) {
                     setTimeout(() => {
                         if (state.quizP1Score > state.quizP2Score) {
                             declareWinner(1, `Счёт: ${state.quizP1Score} против ${state.quizP2Score}!`);
@@ -982,13 +1098,58 @@
                             declareWinner(0, `Боевая ничья со счётом ${state.quizP1Score}:${state.quizP2Score}!`);
                         }
                     }, 900);
-                } else {
-                    state.quizRound++;
-                    setTimeout(() => {
-                        updateQuizVisuals();
-                        loadRound();
-                    }, 950);
+                    return;
                 }
+
+                const myTurn = playerNum === 1 ? state.quizP1Turn : state.quizP2Turn;
+                if (myTurn <= state.quizMaxRounds) {
+                    setTimeout(() => loadPlayerQuestion(playerNum), isCorrect ? 650 : 1400);
+                } else {
+                    setTimeout(() => {
+                        if (state.gameEnded) return;
+                        document.getElementById(`p${playerNum}-q-text`).textContent = "Все 10 вопросов пройдены! Ждём соперника... ⏳";
+                        document.getElementById(`p${playerNum}-feedback`).textContent = "";
+                        document.getElementById(`p${playerNum}-options`).innerHTML = "";
+                    }, isCorrect ? 650 : 1400);
+                }
+
+            } else if (state.currentMode === 'football') {
+                if (isCorrect) {
+                    if (playerNum === 1) state.fbP1Goals++;
+                    else state.fbP2Goals++;
+                    animateFootballGoal(playerNum);
+                    updateFootballVisuals();
+
+                    if (state.fbP1Goals >= 5) {
+                        setTimeout(() => declareWinner(1, `Победа в серии пенальти со счётом ${state.fbP1Goals}:${state.fbP2Goals}! ⚽`), 850);
+                        return;
+                    } else if (state.fbP2Goals >= 5) {
+                        setTimeout(() => declareWinner(2, `Победа в серии пенальти со счётом ${state.fbP2Goals}:${state.fbP1Goals}! ⚽`), 850);
+                        return;
+                    }
+                    setTimeout(() => {
+                        resetFootballPitch();
+                        loadPlayerQuestion(playerNum);
+                    }, 950);
+                } else {
+                    setTimeout(() => loadPlayerQuestion(playerNum), 1400);
+                }
+
+            } else if (state.currentMode === 'balloons') {
+                if (isCorrect) {
+                    if (playerNum === 1) state.balP1Score++;
+                    else state.balP2Score++;
+                    updateBalloonVisuals();
+
+                    if (state.balP1Score >= 7) {
+                        setTimeout(() => declareWinner(1, `Молниеносная реакция! Лопнуто 7 шаров! 🎈`), 650);
+                        return;
+                    } else if (state.balP2Score >= 7) {
+                        setTimeout(() => declareWinner(2, `Молниеносная реакция! Лопнуто 7 шаров! 🎈`), 650);
+                        return;
+                    }
+                }
+                setTimeout(() => loadPlayerQuestion(playerNum), isCorrect ? 650 : 1400);
             }
         }
 
@@ -1005,11 +1166,52 @@
         function updateQuizVisuals() {
             document.getElementById('quiz-p1-score').textContent = state.quizP1Score;
             document.getElementById('quiz-p2-score').textContent = state.quizP2Score;
-            document.getElementById('quiz-round-num').textContent = state.quizRound;
+            const currentDisplayRound = Math.min(state.quizMaxRounds, Math.max(state.quizP1Turn, state.quizP2Turn));
+            document.getElementById('quiz-round-num').textContent = currentDisplayRound;
+        }
+
+        function updateFootballVisuals() {
+            document.getElementById('fb-p1-goals').textContent = state.fbP1Goals;
+            document.getElementById('fb-p2-goals').textContent = state.fbP2Goals;
+        }
+
+        function animateFootballGoal(playerNum) {
+            const ball = document.getElementById('fb-ball');
+            const keeper = document.getElementById('fb-keeper');
+            const banner = document.getElementById('fb-goal-banner');
+
+            ball.style.bottom = '58%';
+            ball.style.left = playerNum === 1 ? '43%' : '57%';
+            ball.style.transform = 'translate(-50%, 0) scale(0.75) rotate(360deg)';
+            keeper.style.transform = playerNum === 1 ? 'translateX(45px) rotate(25deg)' : 'translateX(-45px) rotate(-25deg)';
+
+            setTimeout(() => {
+                banner.classList.remove('hidden');
+            }, 250);
+        }
+
+        function resetFootballPitch() {
+            const ball = document.getElementById('fb-ball');
+            const keeper = document.getElementById('fb-keeper');
+            const banner = document.getElementById('fb-goal-banner');
+            banner.classList.add('hidden');
+            ball.style.bottom = '12px';
+            ball.style.left = '50%';
+            ball.style.transform = 'translate(-50%, 0) scale(1) rotate(0deg)';
+            keeper.style.transform = 'translateX(0) rotate(0deg)';
+        }
+
+        function updateBalloonVisuals() {
+            document.getElementById('bal-p1-score').textContent = state.balP1Score;
+            document.getElementById('bal-p2-score').textContent = state.balP2Score;
+            document.getElementById('bal-p1-bar').style.width = `${(state.balP1Score / 7) * 100}%`;
+            document.getElementById('bal-p2-bar').style.width = `${(state.balP2Score / 7) * 100}%`;
         }
 
         // ==================== ЭКРАН ПОБЕДЫ И КОНФЕТТИ ====================
         function declareWinner(winnerNum, subtitle) {
+            if (state.gameEnded) return;
+            state.gameEnded = true;
             sfxVictory();
             spawnConfetti();
 
@@ -1057,17 +1259,14 @@
         // ==================== УПРАВЛЕНИЕ С КЛАВИАТУРЫ ====================
         document.addEventListener('keydown', (e) => {
             if (!state.currentMode || document.getElementById('screen-game').classList.contains('hidden')) return;
-            // Игнорируем ввод, если открыто окно помощи
             if (!document.getElementById('modal-help').classList.contains('hidden')) return;
 
             const code = e.code;
-            // Игрок 1: Q, W, E, R или 1, 2, 3, 4
             if (code === 'KeyQ' || code === 'Digit1') handlePlayerAnswer(1, 0);
             else if (code === 'KeyW' || code === 'Digit2') handlePlayerAnswer(1, 1);
             else if (code === 'KeyE' || code === 'Digit3') handlePlayerAnswer(1, 2);
             else if (code === 'KeyR' || code === 'Digit4') handlePlayerAnswer(1, 3);
 
-            // Игрок 2: U, I, O, P или 7, 8, 9, 0
             else if (code === 'KeyU' || code === 'Digit7') handlePlayerAnswer(2, 0);
             else if (code === 'KeyI' || code === 'Digit8') handlePlayerAnswer(2, 1);
             else if (code === 'KeyO' || code === 'Digit9') handlePlayerAnswer(2, 2);
